@@ -1,0 +1,13 @@
+{
+  "name": "@krishi-hedge/mobile-pwa",
+  "version": "1.0.0",
+  "description": "Krishi Hedge Mobile Progressive Web App",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

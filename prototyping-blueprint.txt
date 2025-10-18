@@ -1,0 +1,553 @@
+# KRISHI-HEDGE (SIH 25274) — Full Project Plan, Build Guide, and Execution Playbook
+
+Mobile-first virtual hedging platform for oilseed farmers with AI price forecasts, cryptographic contract verification, and FPO/admin web portal.
+
+Version: MVP Plan (Prototype-first)  
+Monorepo: apps (mobile/web), services (api/ml), packages (shared)  
+Stack: React Native (Expo + NativeWind), Next.js, Node.js (Express), PostgreSQL (Supabase), FastAPI (Prophet), SHA-256 + IPFS
+
+---
+
+## 0) TL;DR (What to do next)
+
+- Day 0 (today)
+  - Set up monorepo and tooling (Node 20, Python 3.11, Git, VS Code)
+  - Bootstrap apps/mobile (Expo + NativeWind) and apps/web (Next.js)
+  - Create services/api (Express + Supabase) and services/ml (FastAPI + Prophet)
+  - Prepare SIH PPT (use sections from this README)
+
+- Day 1–7 (PPT + basic prototype)
+  - Mobile: Auth screens + dashboard (static data → API later)
+  - API: Users, contracts CRUD, hash generation
+  - ML service: /predict endpoint (seed model)
+  - Web: Admin dashboard (contracts table, simple charts)
+
+- Demo path (2 mins)
+  - Login → View current prices + forecast → Create hedge → Show contract hash → Verify hash → Admin views contract
+
+---
+
+## 1) Why this project (Problem → Solution)
+
+- Problem
+  - Oilseed farmers face high price volatility (20–40%), no accessible hedging since NCDEX suspension (2021), leading to distress sales and unstable income.
+- Solution
+  - Simple mobile app to lock prices via digitally signed “virtual futures” contracts.
+  - AI forecasts (7–30 day) assist decisions.
+  - Cryptographic hashing + IPFS for tamper-evident contracts.
+  - FPO/Admin portal for oversight and operations.
+
+Success criteria (MVP)
+- Farmer can sign up (phone OTP), see predicted price, create a hedge contract, and get a verifiable hash.
+- Admin can view all contracts and status.
+- Forecast endpoint returns reasonable trend with confidence bounds.
+- All flows work offline-to-online (basic retry), and on low-end Android via Expo Go or APK.
+
+---
+
+## 2) Users and core use-cases
+
+- Farmer (mobile)
+  - View current APMC/market price (seed with sample feed for MVP)
+  - View ML forecast (7/15/30 days)
+  - Create a hedge contract (crop, qty, price, duration)
+  - See contract details and verification hash
+  - Notifications (local for MVP)
+
+- FPO/Admin (web)
+  - Review all contracts (filters, status)
+  - Approve/match counterparties (MVP: auto-approve)
+  - Monitor prices and forecasts (simple charts)
+  - Export reports (CSV basic)
+
+- System (backend + ml)
+  - Ingest or simulate prices
+  - Generate forecasts
+  - Persist users, contracts, prices
+  - Hash + verify contracts; store PDF/JSON on IPFS (optional for MVP day 2–3)
+
+---
+
+## 3) Features — MVP vs backlog
+
+- MVP (build now)
+  - Mobile: Auth (mock or Supabase OTP), Dashboard, Forecast chart, Create contract, Contract details + hash verification
+  - Web: Login (mock or Supabase), Contracts list, Contract detail, Basic analytics (count by crop/status)
+  - API: Auth (JWT), Contracts CRUD, Prices list, Forecast proxy, Hash/verify endpoints
+  - ML: /predict: commodity, horizon → values + intervals
+  - Crypto: SHA-256 hash of contract JSON; store hash in DB; verify route
+  - Data: Seed prices + few crops; no real-time feed at start
+
+- Phase 2 (nice-to-have during SIH if time permits)
+  - IPFS upload for contract JSON/PDF (Pinata) and storing CID
+  - Realtime updates via Socket.io
+  - Multi-language UI (Hindi/English toggle)
+  - Offline queue (persisted requests)
+
+- Post-SIH
+  - Polygon testnet smart contract
+  - Payments (Razorpay test)
+  - Role-based workflows (buyer matching, dispute workflows)
+  - Advanced ML (multi-variate with weather)
+
+---
+
+## 4) Architecture (high-level)
+
+Flow (ASCII)
+- Mobile App (Expo RN + NativeWind)
+  → API (Express + TS)
+  → DB (Supabase Postgres) + Storage (Supabase/Pinata)
+  → ML Service (FastAPI + Prophet)
+  → Optional: Redis (Upstash) for cache
+  → Web Admin (Next.js)
+
+Data lifecycle
+- Prices (seed CSV → DB)
+- Forecasts (on-demand via ML service; cache 10–60 mins)
+- Contracts (created on API; hashed; optional IPFS pin; status transitions)
+
+---
+
+## 5) Tech stack and decisions
+
+- Mobile: React Native (Expo) + TypeScript, NativeWind (Tailwind for RN), React Navigation, Zustand, Axios, AsyncStorage, Victory Native
+- Web: Next.js 14 (app router) + TypeScript, TailwindCSS + shadcn/ui, Recharts, RHF + Zod
+- API: Node.js 20 + Express + TypeScript; Zod validation; JWT; Helmet/CORS/rate limit; Winston/Pino logs
+- DB/Auth: Supabase Postgres with RLS; Supabase Auth (phone/email)
+- ML: FastAPI + Prophet + Pandas/NumPy (Python 3.11), /predict endpoint
+- Crypto: Node crypto (SHA-256) now; IPFS (Pinata) optional; Polygon later
+- CI/CD: GitHub Actions; Vercel (web), Railway (api/ml); Expo EAS for APK
+- Testing: Jest + Supertest (API), Playwright (web), Detox optional (mobile), Pytest (ML)
+
+---
+
+## 6) Monorepo structure (apps/services/packages)
+
+- apps/
+  - mobile/ (Expo RN + NativeWind)
+  - web/ (Next.js)
+- services/
+  - api/ (Express + TS)
+  - ml/ (FastAPI + Prophet)
+- packages/
+  - types/ (shared TS types)
+  - utils/ (isomorphic helpers)
+  - ui-native/ (shared RN components; optional)
+  - ui-web/ (shared web components; optional)
+- docs/, scripts/, .github/, .vscode/, etc.
+
+Refer to the repository tree provided in repo setup messages. Keep shared packages free of platform-specific APIs.
+
+---
+
+## 7) Data model (MVP)
+
+Tables (Postgres)
+- users
+  - id (uuid), phone/email, role (farmer/fpo/admin), name, created_at
+- crops
+  - id (uuid), name (soybean, mustard, castor, groundnut), unit (qtl), meta jsonb
+- prices
+  - id, crop_id, date, min_price, max_price, modal_price, market (text), source (enum)
+- contracts
+  - id, farmer_id, crop_id, quantity_qtl, lock_price_inr_per_qtl, duration_days, expires_at, status (draft/active/settled/cancelled), hash (varchar), ipfs_cid (varchar nullable), created_at
+- predictions
+  - id, crop_id, horizon_days, created_at, payload jsonb (series, intervals)
+
+Indexes
+- prices(crop_id, date)
+- contracts(farmer_id, status)
+- predictions(crop_id, horizon_days, created_at desc)
+
+---
+
+## 8) API design (MVP endpoints)
+
+Auth (if using Supabase Auth, app hits Supabase directly)
+- POST /api/auth/login (optional JWT demo if not using Supabase)
+- GET /api/auth/me
+
+Crops/Prices
+- GET /api/crops
+- GET /api/prices?cropId=...&range=30d
+
+Contracts
+- GET /api/contracts?role=farmer|fpo&status=active
+- POST /api/contracts
+  - { cropId, quantityQtl, lockPriceInrPerQtl, durationDays }
+  - Response includes generated hash
+- GET /api/contracts/:id
+- POST /api/contracts/:id/activate
+- POST /api/contracts/:id/settle
+- POST /api/contracts/:id/cancel
+
+Hash/Verify
+- POST /api/hash
+  - body: { contract }
+  - returns { hash }
+- POST /api/verify
+  - body: { contract, hash }
+  - returns { valid: boolean }
+
+Forecast (proxy to ML)
+- GET /api/forecast?crop=soybean&horizon=30
+  - returns: { series: [{date, yhat, yhat_lower, yhat_upper}] }
+
+Admin
+- GET /api/admin/contracts/metrics
+- GET /api/admin/prices/summary
+
+Response envelopes
+- { success: true, data, error?: { code, message } }
+
+---
+
+## 9) ML plan (Prophet)
+
+- Input data
+  - Use seeded NCDEX-like historical series (CSV) for 1–2 crops for MVP.
+- Training
+  - Notebook to explore and clean data; then a simple train.py to fit Prophet models per crop and serialize (optional).
+- Serving
+  - FastAPI endpoint computes forecast on demand from provided recent historical window (send last N days from DB).
+- Output
+  - yhat (point), yhat_lower/upper for bands; return 7/15/30-day arrays.
+- Performance
+  - Cache forecasts for crop+horizon for 10–30 minutes in API to reduce recompute.
+
+---
+
+## 10) Crypto + IPFS (MVP → Phase 2)
+
+- MVP (Day 1)
+  - Hash function (Node crypto)
+    - sha256(JSON.stringify(contractNormalized))
+  - Store hash in contracts.hash; verify by recomputing.
+
+- Optional (Day 2–3)
+  - IPFS via Pinata
+    - Upload finalized contract JSON/PDF; store returned CID in contracts.ipfs_cid
+    - Add a “Verify on IPFS” button (public gateway link)
+
+- Phase 2 (Post-SIH)
+  - Solidity smart contract to persist core fields + hash
+  - Polygon Mumbai testnet → Mainnet
+
+---
+
+## 11) Security, privacy, compliance
+
+- Auth: Supabase Auth (phone/email OTP), short-lived JWT on client
+- RLS: Enable per-table policies so each farmer only sees own contracts
+- Validation: Zod schemas on all API inputs; sanitize output
+- Secrets: .env local only; never commit; use project-level secrets in CI
+- Transport: HTTPS everywhere in deployment
+- PII: Store minimal PII; consider masking phone numbers in logs
+- Files: Avoid storing raw Aadhaar or sensitive docs in MVP
+
+---
+
+## 12) Developer setup (Windows)
+
+Prereqs
+- Node.js 20.x (LTS), npm 10+
+- Python 3.11 (add to PATH)
+- Git, VS Code
+
+Commands (PowerShell)
+- Clone and install
+  - cd "d:\Folder A"
+  - git clone <your-repo-url> "Kartavya-SIH25274"
+  - cd "Kartavya-SIH25274"
+  - npm install  (root, to get dev deps)
+- Apps
+  - cd apps\mobile
+  - npx create-expo-app@latest . --template blank-typescript
+  - npm install nativewind tailwindcss@3 @react-navigation/native @react-navigation/native-stack @react-navigation/bottom-tabs axios zustand victory-native @react-native-async-storage/async-storage
+  - npx expo install react-native-screens react-native-safe-area-context react-native-svg
+  - npx tailwindcss init
+  - Configure babel (add 'nativewind/babel'); add app.d.ts; set tailwind content globs
+- Web
+  - cd ..\web
+  - npx create-next-app@latest . --typescript --tailwind --app --src-dir --import-alias "@/*"
+  - npx shadcn-ui@latest init
+  - npx shadcn-ui@latest add button card input table dialog tabs
+  - npm install recharts @supabase/supabase-js react-hook-form zod axios
+- API
+  - cd ..\..\services\api
+  - npm init -y
+  - npm install express cors dotenv zod jsonwebtoken bcryptjs helmet express-rate-limit morgan @supabase/supabase-js axios
+  - npm install -D typescript ts-node nodemon @types/node @types/express @types/cors @types/jsonwebtoken @types/bcryptjs @types/morgan
+  - npx tsc --init
+- ML
+  - cd ..\ml
+  - python -m venv venv
+  - venv\Scripts\activate
+  - pip install fastapi uvicorn prophet pandas numpy pydantic scikit-learn python-dotenv
+  - pip freeze > requirements.txt
+
+Run (local)
+- Mobile: cd apps\mobile; npx expo start (scan QR with Expo Go)
+- Web: cd apps\web; npm run dev (http://localhost:3000)
+- API: cd services\api; npx nodemon src/index.ts (http://localhost:5000)
+- ML: cd services\ml; venv\Scripts\activate; uvicorn app.main:app --reload --port 8000
+
+Data usage estimate (first-time)
+- ~1.2–1.5 GB total across all stacks; ensure ~2 GB available
+
+---
+
+## 13) Environment variables (examples)
+
+Root .env.example
+- SHARED
+  - NODE_ENV=development
+  - SUPABASE_URL=...
+  - SUPABASE_ANON_KEY=...
+  - DATABASE_URL=postgresql://user:pass@host:5432/db
+  - ML_SERVICE_URL=http://localhost:8000
+- API
+  - PORT=5000
+  - JWT_SECRET=change-this
+  - RATE_LIMIT_WINDOW_MS=60000
+  - RATE_LIMIT_MAX=100
+  - PINATA_API_KEY= (optional)
+  - PINATA_SECRET_API_KEY= (optional)
+- WEB
+  - NEXT_PUBLIC_SUPABASE_URL=...
+  - NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+- MOBILE
+  - EXPO_PUBLIC_API_URL=http://your-ip:5000
+  - EXPO_PUBLIC_SUPABASE_URL=...
+  - EXPO_PUBLIC_SUPABASE_ANON_KEY=...
+
+Note: For mobile on device, use your machine’s LAN IP (ipconfig) for API URLs.
+
+---
+
+## 14) Implementation blueprints
+
+Mobile (Expo + NativeWind)
+- Navigation
+  - RootStack: (AuthStack | AppTabs)
+  - Tabs: Dashboard, Forecast, Contracts, Profile
+- Stores (Zustand)
+  - authStore: user, token, login(), logout()
+  - contractStore: list, fetch(), create()
+- Services (Axios)
+  - api.ts: baseURL from EXPO_PUBLIC_API_URL; interceptors for token
+  - forecast.service.ts: getForecast(crop, horizon)
+  - contracts.service.ts: createContract(payload), getContracts()
+- UI
+  - Use NativeWind utility classes
+  - VictoryLine for forecast chart with bands
+
+Web (Next.js)
+- App routes
+  - /login, /dashboard, /contracts, /contracts/[id], /analytics
+- Components
+  - DataTable (contracts), Chart (Recharts)
+- Lib
+  - supabase client, api client, auth guard
+- Server actions or API routes for admin summaries (optionally)
+
+API (Express)
+- Structure
+  - src/config (env), src/middleware (auth, error, rate-limit), src/routes, src/controllers, src/services, src/utils (hash, logger)
+- Hash util
+  - sha256(JSON.stringify(sortedContract))
+- Contract lifecycle
+  - create: validate → compute hash → save
+  - verify: recompute → compare
+- Forecast proxy
+  - /api/forecast forwards to ML, caches response
+
+ML (FastAPI)
+- /health
+- /predict?crop=soybean&horizon=30
+  - Load recent price series from request (or dev sample)
+  - Run Prophet; return arrays yhat/yhat_lower/yhat_upper
+
+---
+
+## 15) Testing strategy (practical)
+
+- API: Jest + Supertest
+  - Unit: utils/hash.spec.ts
+  - Integration: contracts.e2e.spec.ts (create → verify → get)
+- Web: Playwright
+  - Auth flow (mock), contracts table renders, drill-down
+- Mobile: Manual first; later Detox for smoke tests
+- ML: Pytest on data prep and forecast shape
+- Lint/format: ESLint + Prettier precommit (Husky optional)
+
+---
+
+## 16) CI/CD
+
+- GitHub Actions
+  - On push PR:
+    - node setup → npm ci → lint → build web/api
+    - python setup → pip install → run unit tests (optional)
+- Deploy
+  - Web: Vercel (connect apps/web)
+  - API: Railway (services/api, set env, expose PORT)
+  - ML: Railway (services/ml, Python build, PORT 8000)
+  - DB: Supabase (migrations via SQL editor)
+
+---
+
+## 17) Deployment steps (first time)
+
+Web (Vercel)
+- Import repo → select apps/web
+- Set env: NEXT_PUBLIC_SUPABASE_* + API base URL
+- Deploy → note URL
+
+API (Railway)
+- New project → Deploy from GitHub → pick services/api
+- Set env (PORT=5000, SUPABASE_*, ML_SERVICE_URL)
+- Deploy → note URL
+
+ML (Railway)
+- New project → Deploy from GitHub → services/ml
+- Python → install from requirements.txt, Start: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+- Set env; deploy → note URL
+- Update API ML_SERVICE_URL to ML public URL
+
+Mobile
+- Update EXPO_PUBLIC_API_URL to API public or LAN
+- Expo EAS build (optional) for APK
+
+---
+
+## 18) Project management (timeline and tasks)
+
+Week 0 (2–3 days)
+- Monorepo + tooling
+- Supabase project + tables (users, crops, prices, contracts)
+- ML service scaffold + hello-world /predict
+
+Week 1 (PPT + prototype)
+- Mobile: Auth screens, dashboard UI (static), forecast chart from ML
+- API: Contracts create/get + hash/verify
+- Web: Contracts table + detail
+- Seed data: prices for 2 crops
+
+Week 2
+- Integrate Supabase Auth (phone/email OTP) in mobile/web
+- Prices page (pull from DB), dashboard metrics in web
+- IPFS upload for finalized contract (optional)
+- Offline-friendly request queue in mobile (basic)
+
+Week 3
+- Realtime (optional Socket.io) for contract status updates
+- Admin analytics (counts per crop/status, simple charts)
+- UX polish, i18n stub (EN/HIN toggles), accessibility passes
+
+Week 4
+- Stabilize, smoke tests, CI, deploy all
+- Record demo video, run script, dry runs
+- Prepare judge Q&A
+
+Daily cadence
+- 90–120 mins coding
+- 15 mins standup: blockers/plan
+- Nightly push, CI green
+
+---
+
+## 19) Risks and mitigations
+
+- OTP/SMS complexity
+  - Mitigate: Start with email/password; add OTP later
+- ML forecast quality
+  - Mitigate: Communicate “confidence range”; seed clean data
+- Network variability (mobile)
+  - Mitigate: Offline queue + retries; show sync state
+- Time pressure
+  - Mitigate: Ruthless scope: “demo path first”
+- Blockchain expectations
+  - Mitigate: Use clear language “cryptographic verification; IPFS storage; Polygon roadmap”
+
+---
+
+## 20) Demo script (2–3 minutes)
+
+- Open mobile app (logged in as farmer)
+  - Dashboard → Today’s price + 7-day forecast chart
+  - Create hedge: Soybean, 100 qtl, ₹4600, 30 days → Submit
+  - Show contract detail: status ACTIVE, hash ABC…123
+  - Tap “Verify” → API recomputes → “Valid ✅”
+- Switch to web (admin)
+  - Contracts table → filter Soybean → open latest
+  - Show hash match; show simple metrics
+- Close with roadmap slide: IPFS + Polygon
+
+---
+
+## 21) Coding standards and workflow
+
+- Branching: feature/* branches, PR to main
+- Commits: Conventional (feat:, fix:, chore:)
+- Lint/format: Prettier + ESLint before commit
+- Types: TypeScript strict; shared types in packages/types
+- ENV: Never commit .env; use .env.example
+
+---
+
+## 22) Out of scope (MVP)
+
+- Real on-chain settlement and legal enforceability
+- Full buyer matching marketplace
+- Complex KYC integrations
+- SMS at scale (use local notifications or email for demo)
+
+---
+
+## 23) References and data
+
+- Agmarknet (for later integration)
+- NCDEX historical (seed CSVs for demo)
+- OpenWeather (optional future feature)
+- Prophet docs, Supabase docs, Expo/Next.js docs
+
+---
+
+## 24) License, credits, and contact
+
+- License: MIT (see LICENSE)
+- Built for: SIH 2025 — PS 25274
+- Contact: [add email/links]
+
+---
+
+## Appendix A) Sample contract JSON + hash
+
+- Contract JSON (normalized keys + order before hashing)
+  - { id, farmerId, cropId, quantityQtl, lockPriceInrPerQtl, durationDays, expiresAt, createdAt }
+- Hash (Node)
+  - createHash('sha256').update(JSON.stringify(contractNormalized)).digest('hex')
+
+---
+
+## Appendix B) Performance targets (MVP)
+
+- API p95 latency < 400 ms (local), < 800 ms (Railway)
+- Forecast endpoint < 1.5 s (cache results for 10–30 mins)
+- Mobile first load < 3 s on low-end device (Expo Go)
+- Web LCP < 2.5 s on broadband
+
+---
+
+## Appendix C) Accessibility and i18n
+
+- High-contrast color palette, large tap targets
+- Avoid text-only indicators; use icons/labels
+- i18n scaffolding (en, hi) with simple translation files
+- Screen reader labels on critical buttons
+
+---
+
+Execute the plan top-down. Build the demo path first. Polish only what you will show. Upgrade later.
