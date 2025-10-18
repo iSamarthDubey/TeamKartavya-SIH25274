@@ -1,88 +1,121 @@
-# Krishi Hedge - AI-Powered Oilseed Price Risk Management
+# Krishi Hedge
 
-**Smart India Hackathon 2025 | Problem Statement ID: 25274**
+A comprehensive price risk management platform for oilseed markets, developed for Smart India Hackathon 2025.
 
-> A blockchain-based mobile application featuring simulated futures trading, AI-driven price prediction, and e-contracts for forward sales.
+## Overview
 
-## 🚀 Quick Start
+Krishi Hedge addresses critical price volatility challenges in oilseed markets through AI-powered prediction models and intelligent hedging strategies. The platform provides farmers, traders, and agricultural businesses with institutional-grade risk management tools through accessible web and mobile interfaces.
 
-### Prerequisites
-- Node.js 20+ LTS
-- Python 3.11+
-- npm/yarn
-- Git
+**Problem Statement ID**: SIH25274  
+**Category**: Software  
+**Domain**: Agriculture, FoodTech & Rural Development
 
-### Installation
+## Solution Architecture
 
-```bash
-# Clone the repository
-git clone <your-repo-url>
-cd Kartavya-SIH25274
+The platform is built as a monorepo containing multiple applications and services:
 
-# Install dependencies for all workspaces
-npm install
-
-# Copy environment variables
-cp .env.example .env
-# Fill in your environment variables
-
-# Install Python dependencies for ML service
-cd services/ml
-pip install -r requirements.txt
-cd ../..
+```
+Krishi-Hedge/
+├── apps/
+│   ├── web/                 # Next.js Dashboard
+│   ├── mobile-pwa/          # Progressive Web App
+│   └── mobile-native/       # React Native Application
+├── services/
+│   ├── api/                 # Express API Service
+│   └── ml/                  # FastAPI ML Service
+└── packages/
+    ├── types/               # Shared TypeScript Definitions
+    ├── utils/               # Common Utilities
+    ├── ui-web/              # Web UI Components
+    └── ui-native/           # Native UI Components
 ```
 
-### Development
+## Technology Stack
 
-```bash
-# Start API + Web App
-npm run dev
+**Frontend**
+- Next.js 14 with TypeScript
+- React Native with Expo SDK
+- Tailwind CSS and NativeWind
+- Progressive Web App capabilities
 
-# Start Mobile App (separate terminal)
-npm run dev:mobile
+**Backend**
+- Node.js with Express and TypeScript
+- FastAPI for ML service endpoints
+- Supabase (PostgreSQL) database
+- Socket.io for real-time communication
 
-# Start ML Service (separate terminal)
-npm run dev:ml
-```
+**Machine Learning**
+- Prophet for time series forecasting
+- ARIMA models for statistical analysis
+- Python-based prediction pipeline
 
-## 🏗️ Architecture
+**Infrastructure**
+- npm workspaces for monorepo management
+- ESLint and Prettier for code quality
+- Git version control
 
-This monorepo contains:
+## Core Features
 
-- **apps/mobile**: React Native (Expo) farmer app
-- **apps/web**: Next.js 14 FPO/admin dashboard  
-- **services/api**: Node.js + Express REST API
-- **services/ml**: FastAPI price prediction service
-- **packages**: Shared TypeScript types, utilities, and UI components
+**Price Prediction Engine**
+- AI-powered forecasting using multiple models
+- Historical data analysis and pattern recognition
+- Multi-timeframe predictions with confidence intervals
 
-## 🎯 Features
+**Hedging Strategy Optimization**
+- Risk assessment algorithms
+- Personalized hedge recommendations
+- Portfolio optimization tools
 
-### For Farmers
-- 📱 Mobile app for price alerts and hedging
-- 📊 Portfolio risk visualization
-- 📚 Educational modules on risk management
-- 🔔 Real-time market notifications
+**Market Analytics**
+- Real-time price feeds and indicators
+- Volatility analysis and risk metrics
+- Custom alerts and notifications
 
-### For FPOs
-- 🖥️ Web dashboard for contract management
-- 📈 Market analytics and forecasting
-- ✅ Contract approval workflows
-- 📋 Risk assessment tools
+**Multi-Platform Access**
+- Web dashboard for comprehensive analysis
+- PWA for offline mobile capabilities
+- Native mobile app for enhanced user experience
 
-### Technical
-- 🤖 AI-powered price prediction (Prophet)
-- 🔗 Blockchain contract security (Phase 2)
-- ⚡ Real-time updates via Socket.io
-- 🛡️ Supabase authentication & database
+## Platform Applications
 
-## 🛠️ Development Commands
+**Web Dashboard**
+Comprehensive trading and analytics interface featuring advanced charting, portfolio management, and detailed risk analysis reports.
 
-See [WARP.md](./WARP.md) for detailed development commands and architecture.
+**Mobile PWA**
+Lightweight mobile experience with essential trading functions, market overview, and offline capability.
 
-## 📄 License
+**Native Mobile App**
+Full-featured mobile application with native performance, biometric authentication, and real-time notifications.
 
-MIT License - see [LICENSE](./LICENSE) for details.
+## Machine Learning Pipeline
+
+The ML service implements multiple forecasting models:
+- Prophet for robust time series predictions
+- ARIMA for statistical trend analysis
+- External factor integration (weather, policy, global markets)
+- Continuous model evaluation and backtesting
+
+## Market Impact
+
+**Target Segments**
+- Small to medium-scale farmers and traders
+- Agricultural cooperatives and commodity businesses
+- Financial institutions serving agricultural markets
+
+**Value Delivery**
+- Significant reduction in price risk exposure
+- Improved profit margins through better market timing
+- Democratized access to institutional-grade risk management
+- Enhanced financial literacy through educational resources
+
+## Development Approach
+
+The platform follows modern software engineering practices with a focus on scalability, maintainability, and user experience. The monorepo structure enables efficient code sharing and consistent development workflows across all applications and services.
+
+## Competition Context
+
+Developed for Smart India Hackathon 2025, this solution demonstrates technical excellence, user-centered design, and measurable business impact in addressing real-world agricultural challenges.
 
 ---
 
-**Team Kartavya** | Smart India Hackathon 2025
+*Built for Smart India Hackathon 2025*
