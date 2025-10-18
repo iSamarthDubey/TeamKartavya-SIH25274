@@ -1,4 +1,4 @@
-# Krishi Hedge
+# Krishi Hedge - Hedging Platform for Oilseed Price Risk Management
 
 A comprehensive price risk management platform for oilseed markets, developed for Smart India Hackathon 2025.
 
