@@ -102,3 +102,9 @@ data/
 .cache/
 .turbo/
 .swc/
+
+# Documentation and planning files
+WARP.md
+RepositoryStructure.txt
+Stack.txt
+prototyping-blueprint.txt
