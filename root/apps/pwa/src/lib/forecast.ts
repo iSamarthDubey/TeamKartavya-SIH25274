@@ -19,7 +19,7 @@ export interface ForecastSummary {
 export async function getForecastSummary(): Promise<ForecastSummary> {
   // For now, read the ML output JSON that lives in services/ml/forecast.json.
   // In production this would be served by a FastAPI/ML service or cached endpoint.
-  const res = await fetch("http://localhost:3000/api/forecast", { cache: "no-store" }).catch(() => null);
+  const res = await fetch("/api/forecast", { cache: "no-store" }).catch(() => null);
 
   if (!res || !res.ok) {
     // Fallback to hardcoded values if API is unavailable.
