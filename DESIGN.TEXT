@@ -1,0 +1,489 @@
+I’ll treat this as: **“Design the full frontend (all screens) for Krishi Hedge based on the PS + your PDF.”**
+
+I’ll list **every page**, grouped by **user role + platform**, and mention the **features / UI sections** each needs.
+
+(Everything is taken from your SIH PPT: accessibility, AI forecast, forward contracts, simulated trading, alerts, FPO marketplace, education, blockchain verification, etc. )
+
+---
+
+## 0️⃣ User Roles & Platforms
+
+**Roles**
+
+1. **Farmer / Trader**
+2. **FPO / Cooperative**
+3. **Admin / Ops**
+
+**Platforms**
+
+* **Web Dashboard (Next.js)** → mainly FPO + advanced users + admin
+* **Mobile App / PWA (React Native + PWA)** → mainly farmers
+
+I’ll define pages for **Web** and then note which ones are needed in **Mobile** (simplified).
+
+---
+
+## 1️⃣ Global Frontend Elements (all pages)
+
+These aren’t pages but **components** you must have:
+
+* Top navbar (logo, app name, nav links)
+* Sidebar (Dashboard, Market, Hedge, Learn, Alerts, etc.)
+* Language switcher (English / Hindi / regional)
+* Role switch (Farmer / FPO – if same login can have multiple roles)
+* Notification bell + dropdown
+* Profile dropdown (settings, logout)
+* Offline indicator (for PWA / mobile)
+* Toasts / snackbars for success & error
+
+---
+
+## 2️⃣ Auth & Onboarding Pages
+
+### 2.1 **Landing Page / Marketing Page**
+
+**Route:** `/` (web only, optional in mobile)
+**Purpose:** Explain what Krishi Hedge is & why farmers should use it.
+
+**Sections:**
+
+* Hero: “Smart Price Risk Shield for Every Oilseed Farmer” tagline 
+* Short explanation of problem (price volatility, no hedging tools)
+* Key features: AI forecast, virtual hedging, e-contracts, alerts, learn mode
+* “Start as Farmer” / “Start as FPO” buttons
+* Link to Play Store / PWA install instructions
+
+---
+
+### 2.2 **Login / Signup (OTP Based)**
+
+**Route:** `/auth`
+**Used by:** Web + Mobile
+
+**Features:**
+
+* Phone number input
+* Select role (Farmer / FPO / Admin) or auto-detect after signup
+* OTP verification flow
+* Consent / T&C + data usage statement
+
+---
+
+### 2.3 **Onboarding Wizard (Farmer)**
+
+**Route:** `/onboarding/farmer`
+
+**Steps:**
+
+1. Basic details: Name, village, state, language preference
+2. Crops grown: (soybean, mustard, groundnut, sunflower, castor) 
+3. Typical acreage / production
+4. Risk profile (low / medium / high) – used for hedge suggestions
+5. Tutorial screen: 3-slide intro: “Forecast → Hedge → Alert + Payment”
+
+---
+
+### 2.4 **Onboarding Wizard (FPO / Cooperative)**
+
+**Route:** `/onboarding/fpo`
+
+**Steps:**
+
+* Organization details, region
+* Number of member farmers
+* Commodities managed
+* Typical volume per season
+* KYC upload (if you want later)
+
+---
+
+## 3️⃣ Farmer Web & Mobile – Core Pages
+
+### 3.1 **Farmer Dashboard**
+
+**Route:** `/farmer/dashboard`
+
+**Main widgets:**
+
+* Today’s prices for selected crop & local mandi
+* 7-day forecast card (mini chart) 
+* “Recommended Hedge” summary:
+
+  > *“Hedge 40% of your soybean at ₹5,250/quintal – Risk: Medium”*
+* Active forward contracts (status, P/L estimate)
+* Alerts summary (e.g., “2 price alerts triggered this week”)
+* Learn Mode progress (XP points / level)
+
+On **mobile**, compress into scrollable cards.
+
+---
+
+### 3.2 **Market Prices & Analytics Page**
+
+**Route:** `/farmer/market`
+
+**Features:**
+
+* Commodity selector
+* Mandi selector (nearest markets)
+* Historical price chart (e.g., 6 months)
+* Volatility indicator (e.g., Low / Medium / High with % range)
+* Tabs:
+
+  * **Today** (live prices table, from Agmarknet/NCDEX)
+  * **History** (chart + ability to change timeframe)
+  * **Forecast** (switch to forecast page)
+
+---
+
+### 3.3 **Price Forecast Page**
+
+**Route:** `/farmer/forecast`
+
+**Sections:**
+
+* Commodity & mandi dropdown
+* Duration selector (7 / 15 / 30 days)
+* Main chart:
+
+  * Forecast line
+  * Confidence band (high/low) from ML (Prophet + ARIMA) 
+* “Insight” box:
+
+  * Text explanation: “Price expected to rise 5–7% over next week; volatility high”
+* “Create Hedge Based on This Forecast” button (opens forward contract flow)
+
+On **mobile**, chart is simpler but same info.
+
+---
+
+### 3.4 **Create Forward Hedge / E-Contract Wizard**
+
+**Route:** `/farmer/hedge/new`
+
+**Steps:**
+
+1. **Select crop & quantity**
+
+   * Input: quantity (quintals) – min 1 quintal for accessibility 
+   * Show: Current market price + forecast
+2. **Set contract terms**
+
+   * Locked price (auto-filled suggested price but editable)
+   * Duration / expiry date
+   * Percent of total production to hedge
+   * Risk level indicator (e.g., slider or label)
+3. **Review & Confirm**
+
+   * Show summary: total value, risk reduction estimate, potential P/L scenarios
+   * Show blockchain hash generation preview (e.g., “We will secure this on blockchain for tamper-proof record”)
+4. **Sign E-Contract**
+
+   * Digital “I agree” checkbox + PIN/OTP
+   * After create: show “contract ID + hash” and success screen
+
+---
+
+### 3.5 **My Contracts / Portfolio Page**
+
+**Route:** `/farmer/hedge/contracts`
+
+**Table / card list:**
+
+* Contract ID
+* Commodity
+* Quantity
+* Locked price vs current price
+* Expiry date
+* Status (active, expired, settled)
+* Risk impact (e.g., risk reduced by X%) 
+* Link to “View on Blockchain / IPFS” (hash detail)
+
+Also show:
+
+* Overall hedge coverage (% of total production hedged)
+* P/L simulation widget
+
+---
+
+### 3.6 **Contract Detail Page**
+
+**Route:** `/farmer/hedge/contracts/[id]`
+
+**Sections:**
+
+* Full contract details (fields)
+* Timeline (Created → Verified on blockchain → Settlement)
+* Blockchain hash & view link
+* Scenario analysis:
+
+  * If price goes up X% → your P/L
+  * If price goes down Y% → your P/L
+* Download / print contract (PDF) button
+
+---
+
+### 3.7 **Alerts & Notifications Page**
+
+**Route:** `/farmer/alerts`
+
+**Features:**
+
+* List of triggered alerts (price up/down, contract near expiry)
+* Create new alert:
+
+  * Commodity
+  * Condition (price > X, price < Y, volatility above threshold)
+  * Channel: app push / SMS / email
+* Toggle switch per alert (active / inactive)
+
+On **mobile**, this is a simple list + add-alert screen.
+
+---
+
+### 3.8 **Learn Mode – Simulated Trading (Farmer Training)**
+
+**Route:** `/farmer/learn`
+
+**Core requirement from PDF: “₹10K Virtual Capital, Risk-free Practice.”
+
+**Tabs / sections:**
+
+1. **Overview**
+
+   * Show current virtual balance
+   * P/L
+   * Basic stats (number of trades, win rate)
+2. **Place Simulated Trade**
+
+   * Commodity, direction (long/short), quantity
+   * Entry price (from market data)
+   * Use forecast overlay to show expected trend
+3. **Open Positions**
+
+   * List of active simulated trades with P/L
+4. **History**
+
+   * Past trades + outcomes
+5. **Learning Tips**
+
+   * Light explanations like: “Hedging vs Speculation”, “Why hedge only part of your crop”
+
+On **mobile**, might split into 2–3 screens: Overview, Trade, History.
+
+---
+
+### 3.9 **Educational / Financial Literacy Modules**
+
+**Route:** `/farmer/learn/modules`
+
+**From PS & PDF: “Educational modules (financial literacy)”
+
+**Structure:**
+
+* Card grid with lessons:
+
+  * “What is Hedging?”
+  * “Forward Contracts for Farmers”
+  * “Understanding Price Volatility”
+  * “How our AI forecast works (simple explanation)”
+  * “Using Krishi Hedge safely”
+* Each card opens a **lesson page** with:
+
+  * Simple text with graphics
+  * Audio narration (for low literacy)
+  * Quiz at the end (MCQs)
+* Progress bar for completion
+
+---
+
+### 3.10 **Profile & Settings Page (Farmer)**
+
+**Route:** `/farmer/profile`
+
+**Sections:**
+
+* Personal info (name, phone, village)
+* Crop & production data
+* Language preference
+* Notification preferences (SMS, push, email)
+* Privacy / consent
+* Option to connect with an FPO (join FPO)
+
+---
+
+## 4️⃣ FPO / Cooperative – Web Pages
+
+### 4.1 **FPO Dashboard**
+
+**Route:** `/fpo/dashboard`
+
+**Widgets:**
+
+* Aggregate member production per crop
+* Total hedged vs unhedged quantity
+* Risk exposure (value at risk, % hedged)
+* List of recent member contracts
+* Incoming buyer offers (if you add B2B later)
+
+---
+
+### 4.2 **Member Management Page**
+
+**Route:** `/fpo/members`
+
+**Features:**
+
+* List of farmer members
+* Member details: crops, production, their hedged %
+* Filters by village / crop
+* On clicking member → open member detail page
+
+---
+
+### 4.3 **FPO Contracts & Bulk Hedging**
+
+**Route:** `/fpo/contracts`
+
+**Sections:**
+
+* List of all contracts aggregated at FPO level
+* Option to create **bulk forward contract** on behalf of group of farmers
+* Analytics:
+
+  * Avg locked price vs market
+  * FPO exposure by commodity
+* Export to Excel/CSV
+
+---
+
+### 4.4 **Post Contract to Marketplace (FPO Seller)**
+
+**Route:** `/fpo/marketplace/new`
+
+**Fields:**
+
+* Commodity
+* Total quantity
+* Price expectation
+* Settlement terms
+* Valid till date
+* Visibility (public / restricted)
+
+**After posting:** visible on **Marketplace List** page.
+
+---
+
+### 4.5 **Marketplace (FPO Side)**
+
+**Route:** `/fpo/marketplace`
+
+**Shows:**
+
+* Existing forward offers
+* Demand from buyers (if integrated later)
+* Status of posted contracts (open/accepted/closed)
+
+---
+
+### 4.6 **Reports & Analytics Page (FPO)**
+
+**Route:** `/fpo/reports`
+
+**Charts & tables:**
+
+* Season-wise hedging performance
+* Income stabilization metrics
+* Member income uplift (projected)
+* Downloadable PDFs (for government / banks)
+
+---
+
+## 5️⃣ Admin / Ops Pages (Web Only)
+
+### 5.1 **Admin Dashboard**
+
+**Route:** `/admin/dashboard`
+
+**Features:**
+
+* Total users (farmers, FPOs)
+* Total contracts created
+* Total hedged volume (by commodity)
+* Overall platform impact (like metrics from your PPT: e.g., “₹30,000 saved per farmer/season” projections)
+
+---
+
+### 5.2 **Data Monitoring / ML Performance Page**
+
+**Route:** `/admin/ml-monitor`
+
+**Sections:**
+
+* Recent forecasts vs actual prices (accuracy graph)
+* Current model in use (Prophet/ARIMA mixture)
+* Error metrics (MAPE, RMSE)
+* Button to “Trigger retrain” (even if just simulated for SIH)
+
+---
+
+### 5.3 **Blockchain / IPFS Audit Page**
+
+**Route:** `/admin/blockchain`
+
+**Shows:**
+
+* List of contracts with blockchain hash
+* Status (hash stored on IPFS, on Polygon testnet, etc.)
+* Ability to search by contract ID or hash
+* Links to view on block explorer
+
+---
+
+### 5.4 **System Settings Page**
+
+**Route:** `/admin/settings`
+
+**Fields:**
+
+* Global configuration:
+
+  * Thresholds for alerts
+  * Default forecast horizon
+  * Risk classification thresholds
+* Feature toggles (e.g., enable/disable Learn Mode, enable blockchain, etc.)
+
+---
+
+## 6️⃣ Mobile App – Minimal Page List
+
+For **mobile PWA / native**, you don’t need *all* web pages; you need a **compressed set**:
+
+1. **Login / Signup**
+2. **Farmer Dashboard**
+3. **Market Prices & Forecast (merged)**
+4. **Create Hedge (wizard)**
+5. **My Contracts list + detail**
+6. **Alerts (list + create)**
+7. **Learn Mode (simple)**
+8. **Education modules list + lesson**
+9. **Profile & Settings**
+
+FPO + Admin can be web-only (or mobile later if time permits).
+
+---
+
+## 7️⃣ Extra: NCDEX-style “Order Book” Page (Optional but Impressive)
+
+Since your PS mentions **NCDEX-style transparent trading**, you can add:
+
+### **Order Book View**
+
+**Route:** `/market/order-book`
+
+**UI:**
+
+* Order book table (bids & asks)
+* Last traded price
+* Depth chart (if you can)
+
