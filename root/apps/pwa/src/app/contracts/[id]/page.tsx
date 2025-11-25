@@ -26,10 +26,11 @@ export default function ContractDetailPage() {
 
   useEffect(() => {
     if (!params?.id) return;
-    fetch(`/api/contracts/${params.id}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data: StoredContract | null) => {
-        setContract(data);
+    fetch("/api/contracts")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data: StoredContract[]) => {
+        const found = (data || []).find((c) => c.id === params.id);
+        setContract(found || null);
       })
       .catch(() => setContract(null));
   }, [params?.id]);
