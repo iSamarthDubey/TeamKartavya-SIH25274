@@ -18,15 +18,10 @@ export default function ContractsPage() {
   const [contracts, setContracts] = useState<StoredContract[]>([]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const raw = window.localStorage.getItem("contracts");
-    if (!raw) return;
-    try {
-      const parsed = JSON.parse(raw) as StoredContract[];
-      setContracts(parsed);
-    } catch {
-      // ignore parse errors
-    }
+    fetch("/api/contracts")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => setContracts((data || []) as StoredContract[]))
+      .catch(() => setContracts([]));
   }, []);
 
   return (

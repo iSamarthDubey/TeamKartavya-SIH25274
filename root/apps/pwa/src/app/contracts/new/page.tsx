@@ -25,32 +25,27 @@ export default function NewContractPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleCreate() {
+  async function handleCreate() {
     if (!form.quantity || !form.targetPrice) {
       alert("Please enter quantity and target price.");
       return;
     }
 
-    const contractsRaw = typeof window !== "undefined" ? window.localStorage.getItem("contracts") : null;
-    const existing = contractsRaw ? JSON.parse(contractsRaw) : [];
+    const res = await fetch("/api/contracts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        crop: form.crop,
+        quantity: Number(form.quantity),
+        unit: form.unit,
+        targetPrice: Number(form.targetPrice),
+        deliveryWindow: form.deliveryWindow,
+      }),
+    });
 
-    const id = Date.now().toString();
-    const createdAt = new Date().toISOString();
-
-    const newContract = {
-      id,
-      crop: form.crop,
-      quantity: Number(form.quantity),
-      unit: form.unit,
-      strikePrice: Number(form.targetPrice),
-      deliveryWindow: form.deliveryWindow,
-      status: "CREATED" as const,
-      createdAt,
-    };
-
-    const updated = [newContract, ...existing];
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("contracts", JSON.stringify(updated));
+    if (!res.ok) {
+      alert("Failed to create contract");
+      return;
     }
 
     router.push("/contracts");

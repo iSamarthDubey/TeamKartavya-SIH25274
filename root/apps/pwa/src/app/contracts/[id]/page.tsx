@@ -26,11 +26,12 @@ export default function ContractDetailPage() {
 
   useEffect(() => {
     if (!params?.id) return;
-    if (typeof window === "undefined") return;
-    const raw = window.localStorage.getItem("contracts");
-    const list: StoredContract[] = raw ? JSON.parse(raw) : [];
-    const found = list.find((c) => c.id === params.id);
-    setContract(found || null);
+    fetch(`/api/contracts/${params.id}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: StoredContract | null) => {
+        setContract(data);
+      })
+      .catch(() => setContract(null));
   }, [params?.id]);
 
   useEffect(() => {
@@ -109,12 +110,41 @@ export default function ContractDetailPage() {
         </p>
       </section>
 
-      {/* Links: PDF & Blockchain proof placeholders */}
+      {/* Links: PDF & Blockchain proof */}
       <section className="mb-3 space-y-2">
-        <button className="w-full rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-800 shadow-sm">
+        <button
+          className="w-full rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-800 shadow-sm"
+          onClick={async () => {
+            if (!contract?.id) return;
+            // Call PDF stub to ensure pdfUrl exists (points to /sample-contract.pdf)
+            await fetch(`/api/contracts/${contract.id}/pdf`, { method: "POST" }).catch(() => {});
+            // Open the static sample for demo
+            window.open(`/sample-contract.pdf`, "_blank");
+          }}
+        >
           View e-contract (PDF)
         </button>
-        <button className="w-full rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-800 shadow-sm">
+        <button
+          className="w-full rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-800 shadow-sm"
+          onClick={async () => {
+            if (!contract?.id) return;
+            try {
+              const res = await fetch(`/api/contracts/${contract.id}/anchor`, { method: "POST" });
+              if (!res.ok) {
+                alert("Unable to fetch blockchain proof right now.");
+                return;
+              }
+              const data = await res.json();
+              if (data.explorerUrl) {
+                window.open(data.explorerUrl, "_blank");
+              } else {
+                alert("Explorer URL not available.");
+              }
+            } catch {
+              alert("Error contacting anchor service.");
+            }
+          }}
+        >
           View blockchain proof (Mumbai)
         </button>
       </section>
