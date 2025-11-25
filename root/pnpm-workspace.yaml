@@ -1,0 +1,5 @@
+packages:
+  - "apps/pwa"
+  - "services/*"
+  - "packages/*"
+
