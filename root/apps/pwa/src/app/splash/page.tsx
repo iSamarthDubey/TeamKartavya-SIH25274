@@ -29,50 +29,53 @@ export default function SplashPage() {
   }
 
   return (
-    <main className="flex min-h-screen justify-center bg-zinc-50">
-      <div className="flex min-h-screen w-full max-w-[420px] flex-col bg-white px-4 pb-10 pt-6">
+    <main className="flex min-h-screen justify-center bg-gradient-to-b from-[#16a34a] via-[#4ade80] to-[#f7faf7]">
+      <div className="flex min-h-screen w-full max-w-[420px] flex-col rounded-none bg-white/90 px-4 pb-10 pt-6 shadow-[0_24px_60px_rgba(22,163,74,0.35)] backdrop-blur-sm">
         <header className="mb-8 flex items-center justify-between">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-emerald-700">
+            <p className="text-xs font-medium uppercase tracking-wide text-emerald-100">
               Krishi Hedge
             </p>
-            <h1 className="text-lg font-semibold text-zinc-900">Smart Price Shield</h1>
+            <h1 className="text-xl font-semibold text-white drop-shadow-sm">
+              Smart Price Shield for Every Farmer
+            </h1>
           </div>
           <button
             onClick={toggleLanguage}
-            className="rounded-full border border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-700"
+            className="rounded-full border border-white/60 bg-white/10 px-3 py-1 text-xs font-medium text-white shadow-sm backdrop-blur"
           >
             {language === "en" ? "EN / हिन्दी" : "हिन्दी / EN"}
           </button>
         </header>
 
-        <section className="mt-4 space-y-3">
-          <p className="text-sm font-medium text-zinc-800">
+        <section className="mt-6 space-y-4">
+          <p className="text-sm font-medium text-emerald-900">
             Choose how you want to use Krishi Hedge today.
           </p>
+
           <button
             onClick={() => chooseRole("farmer")}
-            className="w-full rounded-2xl bg-emerald-600 px-4 py-4 text-left text-sm font-semibold text-white shadow-sm"
+            className="w-full rounded-2xl bg-white/95 px-4 py-4 text-left text-sm font-semibold text-emerald-900 shadow-[0_18px_40px_rgba(22,163,74,0.28)] backdrop-blur-sm"
           >
-            <span className="block text-xs font-medium uppercase tracking-wide text-emerald-100">
+            <span className="block text-xs font-medium uppercase tracking-wide text-emerald-600">
               Continue as
             </span>
             <span className="mt-1 block text-base">Farmer / FPO member</span>
-            <span className="mt-1 block text-[11px] font-normal text-emerald-100">
-              Get simple guidance, forecasts & safe practice first.
+            <span className="mt-1 block text-[11px] font-normal text-emerald-700">
+              Get AI price forecasts, safe practice, and simple hedge guidance.
             </span>
           </button>
 
           <button
             onClick={() => chooseRole("buyer")}
-            className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-4 text-left text-sm font-semibold text-zinc-900 shadow-sm"
+            className="w-full rounded-2xl border border-white/60 bg-white/80 px-4 py-4 text-left text-sm font-semibold text-emerald-900 shadow-[0_14px_32px_rgba(15,118,110,0.2)] backdrop-blur-sm"
           >
-            <span className="block text-xs font-medium uppercase tracking-wide text-zinc-500">
+            <span className="block text-xs font-medium uppercase tracking-wide text-emerald-700">
               Continue as
             </span>
             <span className="mt-1 block text-base">Buyer / Trader</span>
-            <span className="mt-1 block text-[11px] font-normal text-zinc-500">
-              Browse farmer forwards, filter by crop & region.
+            <span className="mt-1 block text-[11px] font-normal text-emerald-800">
+              Discover farmer forwards, filter by crop and region, and match positions.
             </span>
           </button>
         </section>
@@ -80,4 +83,3 @@ export default function SplashPage() {
     </main>
   );
 }
-

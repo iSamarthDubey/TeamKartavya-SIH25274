@@ -18,10 +18,13 @@ export function BottomNav() {
     }
   }, []);
 
+  const baseClasses =
+    "fixed inset-x-0 bottom-3 mx-auto flex max-w-[420px] items-center justify-between rounded-3xl border border-white/60 bg-white/85 px-4 py-2 text-[11px] text-zinc-600 shadow-[0_16px_40px_rgba(15,118,110,0.25)] backdrop-blur-md";
+
   if (role === 'buyer') {
     // Buyer tabs: Home, Forecast, Contracts, Market, Profile
     return (
-      <nav className="fixed inset-x-0 bottom-0 mx-auto flex max-w-[420px] items-center justify-between border-t border-zinc-200 bg-white px-4 py-2 text-[11px] text-zinc-600">
+      <nav className={baseClasses}>
         <Link href="/buyer/home" className="flex flex-1 flex-col items-center justify-center gap-0.5">
           <span className="text-xs font-semibold text-emerald-700">Home</span>
         </Link>
@@ -43,7 +46,7 @@ export function BottomNav() {
 
   // Farmer tabs: Home, Forecast, Contracts, Sandbox, Profile
   return (
-    <nav className="fixed inset-x-0 bottom-0 mx-auto flex max-w-[420px] items-center justify-between border-t border-zinc-200 bg-white px-4 py-2 text-[11px] text-zinc-600">
+    <nav className={baseClasses}>
       <Link href="/" className="flex flex-1 flex-col items-center justify-center gap-0.5">
         <span className="text-xs font-semibold text-emerald-700">Home</span>
       </Link>
