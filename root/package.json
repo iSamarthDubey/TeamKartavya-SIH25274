@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "dev:all": "powershell -ExecutionPolicy Bypass -File ./scripts/start-dev.ps1",
     "dev:pwa": "pnpm --filter @app/pwa dev",
     "dev:admin-web": "pnpm --filter @app/admin-web dev",
     "dev:functions": "pnpm --filter @svc/functions dev",
