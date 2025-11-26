@@ -13,8 +13,12 @@ export default function SplashPage() {
       ></div>
       
       <div className="z-10 text-center space-y-6">
-        <div className="w-24 h-24 bg-yellow-400 rounded-2xl flex items-center justify-center mx-auto shadow-lg mb-4">
-          <i className="fa-solid fa-wheat-awn text-5xl text-green-900"></i>
+        <div className="w-32 h-32 mx-auto mb-4 relative">
+          <img 
+            src="/splash-logo.png" 
+            alt="Krishi Hedge Logo" 
+            className="w-full h-full object-contain drop-shadow-xl"
+          />
         </div>
         <div>
           <h1 className="text-4xl font-bold mb-1">Krishi Hedge</h1>
