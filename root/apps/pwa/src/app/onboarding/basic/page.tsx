@@ -38,71 +38,57 @@ export default function OnboardingBasicPage() {
     if (typeof window !== "undefined") {
       window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
     }
-    router.push("/onboarding/farm");
+    router.push("/");
   }
 
   return (
-    <main className="flex min-h-screen justify-center bg-zinc-50">
-      <div className="flex min-h-screen w-full max-w-[420px] flex-col bg-white px-4 pb-10 pt-6">
-        <header className="mb-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-emerald-700">
-            Step 1 of 3
-          </p>
-          <h1 className="text-lg font-semibold text-zinc-900">Tell us about you</h1>
-          <p className="mt-1 text-xs text-zinc-600">This helps us personalise prices and tips for your mandi.</p>
-        </header>
-
-        <section className="space-y-3 text-sm">
-          <div>
-            <label className="block text-xs font-medium text-zinc-700">Name</label>
-            <input
-              className="mt-1 w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
-              value={profile.name || ""}
-              onChange={(e) => update("name", e.target.value)}
-              placeholder="Your full name"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-zinc-700">Village</label>
-            <input
-              className="mt-1 w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
-              value={profile.village || ""}
-              onChange={(e) => update("village", e.target.value)}
-              placeholder="Village name"
-            />
-          </div>
-
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <label className="block text-xs font-medium text-zinc-700">District</label>
-              <input
-                className="mt-1 w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
-                value={profile.district || ""}
-                onChange={(e) => update("district", e.target.value)}
-                placeholder="District"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block text-xs font-medium text-zinc-700">State</label>
-              <input
-                className="mt-1 w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
-                value={profile.state || ""}
-                onChange={(e) => update("state", e.target.value)}
-                placeholder="State"
-              />
-            </div>
-          </div>
-
-          <button
-            onClick={handleNext}
-            className="mt-4 w-full rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm"
-          >
-            Next
-          </button>
-        </section>
+    <div className="h-screen bg-white p-6">
+      <div className="mt-4 mb-6">
+        <h2 className="text-2xl font-bold text-green-800">Setup Profile</h2>
+        <p className="text-gray-500 text-sm">Tell us about your farm.</p>
       </div>
-    </main>
+
+      <div className="space-y-4">
+        <div>
+          <label className="text-xs font-bold text-gray-500">Full Name</label>
+          <input 
+            type="text" 
+            className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 mt-1" 
+            value={profile.name || "Ram Kishan"}
+            onChange={(e) => update("name", e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="text-xs font-bold text-gray-500">District</label>
+          <select 
+            className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 mt-1"
+            value={profile.district || "Indore, MP"}
+            onChange={(e) => update("district", e.target.value)}
+          >
+            <option>Indore, MP</option>
+            <option>Dewas, MP</option>
+            <option>Ujjain, MP</option>
+          </select>
+        </div>
+        <div>
+          <label className="text-xs font-bold text-gray-500">Primary Crop</label>
+          <div className="grid grid-cols-2 gap-3 mt-1">
+            <div className="border-2 border-yellow-500 bg-yellow-50 p-3 rounded-lg text-center cursor-pointer">
+              <i className="fa-solid fa-leaf text-green-600 mb-1"></i>
+              <div className="text-sm font-bold">Soybean</div>
+            </div>
+            <div className="border border-gray-200 p-3 rounded-lg text-center text-gray-400 cursor-pointer">
+              <i className="fa-solid fa-seedling mb-1"></i>
+              <div className="text-sm">Mustard</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button onClick={handleNext} className="w-full bg-yellow-500 text-green-900 font-bold py-3 rounded-lg mt-8 shadow-md">
+        Complete Setup
+      </button>
+    </div>
   );
 }
 

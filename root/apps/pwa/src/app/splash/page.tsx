@@ -1,85 +1,45 @@
 'use client';
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-
-const ROLE_STORAGE_KEY = "kh_role";
-const LANGUAGE_STORAGE_KEY = "kh_lang";
 
 export default function SplashPage() {
   const router = useRouter();
-  const [language, setLanguage] = useState<string>(() => {
-    if (typeof window === "undefined") return "en";
-    return window.localStorage.getItem(LANGUAGE_STORAGE_KEY) || "en";
-  });
-
-  function chooseRole(role: "farmer" | "buyer") {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(ROLE_STORAGE_KEY, role);
-    }
-    router.push("/auth/login");
-  }
-
-  function toggleLanguage() {
-    const next = language === "en" ? "hi" : "en";
-    setLanguage(next);
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(LANGUAGE_STORAGE_KEY, next);
-    }
-  }
 
   return (
-    <main className="flex min-h-screen justify-center bg-gradient-to-b from-[#16a34a] via-[#4ade80] to-[#f7faf7]">
-      <div className="flex min-h-screen w-full max-w-[420px] flex-col rounded-none bg-white/90 px-4 pb-10 pt-6 shadow-[0_24px_60px_rgba(22,163,74,0.35)] backdrop-blur-sm">
-        <header className="mb-8 flex items-center justify-between">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-emerald-100">
-              Krishi Hedge
-            </p>
-            <h1 className="text-xl font-semibold text-white drop-shadow-sm">
-              Smart Price Shield for Every Farmer
-            </h1>
-          </div>
-          <button
-            onClick={toggleLanguage}
-            className="rounded-full border border-white/60 bg-white/10 px-3 py-1 text-xs font-medium text-white shadow-sm backdrop-blur"
+    <div className="h-screen bg-green-900 text-white flex flex-col items-center justify-center p-6 relative">
+      <div 
+        className="absolute top-0 left-0 w-full h-full opacity-10" 
+        style={{ backgroundImage: "radial-gradient(#EAB308 1px, transparent 1px)", backgroundSize: "20px 20px" }}
+      ></div>
+      
+      <div className="z-10 text-center space-y-6">
+        <div className="w-24 h-24 bg-yellow-400 rounded-2xl flex items-center justify-center mx-auto shadow-lg mb-4">
+          <i className="fa-solid fa-wheat-awn text-5xl text-green-900"></i>
+        </div>
+        <div>
+          <h1 className="text-4xl font-bold mb-1">Krishi Hedge</h1>
+          <p className="text-green-300">Smart Price Protection</p>
+        </div>
+        
+        <div className="space-y-3 w-full pt-10">
+          <button 
+            onClick={() => router.push('/auth/login')} 
+            className="w-full bg-yellow-500 hover:bg-yellow-400 text-green-900 font-bold py-4 rounded-xl shadow-lg transition transform active:scale-95"
           >
-            {language === "en" ? "EN / हिन्दी" : "हिन्दी / EN"}
+            Continue as Farmer
           </button>
-        </header>
-
-        <section className="mt-6 space-y-4">
-          <p className="text-sm font-medium text-emerald-900">
-            Choose how you want to use Krishi Hedge today.
-          </p>
-
-          <button
-            onClick={() => chooseRole("farmer")}
-            className="w-full rounded-2xl bg-white/95 px-4 py-4 text-left text-sm font-semibold text-emerald-900 shadow-[0_18px_40px_rgba(22,163,74,0.28)] backdrop-blur-sm"
+          <button 
+            onClick={() => alert('Buyer Flow coming in Phase 2!')} 
+            className="w-full bg-transparent border border-green-500 text-green-100 font-semibold py-4 rounded-xl hover:bg-green-800 transition"
           >
-            <span className="block text-xs font-medium uppercase tracking-wide text-emerald-600">
-              Continue as
-            </span>
-            <span className="mt-1 block text-base">Farmer / FPO member</span>
-            <span className="mt-1 block text-[11px] font-normal text-emerald-700">
-              Get AI price forecasts, safe practice, and simple hedge guidance.
-            </span>
+            Continue as Buyer
           </button>
-
-          <button
-            onClick={() => chooseRole("buyer")}
-            className="w-full rounded-2xl border border-white/60 bg-white/80 px-4 py-4 text-left text-sm font-semibold text-emerald-900 shadow-[0_14px_32px_rgba(15,118,110,0.2)] backdrop-blur-sm"
-          >
-            <span className="block text-xs font-medium uppercase tracking-wide text-emerald-700">
-              Continue as
-            </span>
-            <span className="mt-1 block text-base">Buyer / Trader</span>
-            <span className="mt-1 block text-[11px] font-normal text-emerald-800">
-              Discover farmer forwards, filter by crop and region, and match positions.
-            </span>
-          </button>
-        </section>
+        </div>
+        
+        <div className="pt-8">
+          <span className="text-xs bg-green-800 px-3 py-1 rounded-full text-green-300 border border-green-700">SIH 2025 Prototype</span>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

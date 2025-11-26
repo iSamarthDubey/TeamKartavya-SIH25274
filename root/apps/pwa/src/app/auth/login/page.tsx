@@ -25,39 +25,32 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen justify-center bg-zinc-50">
-      <div className="flex min-h-screen w-full max-w-[420px] flex-col bg-white px-4 pb-10 pt-6">
-        <header className="mb-6">
-          <p className="text-xs font-medium uppercase tracking-wide text-emerald-700">
-            Login
-          </p>
-          <h1 className="text-lg font-semibold text-zinc-900">Enter your mobile number</h1>
-          <p className="mt-1 text-xs text-zinc-600">We will send a one-time password (OTP).</p>
-        </header>
+    <div className="h-screen bg-white p-6">
+      <div className="mt-10 mb-8">
+        <button onClick={() => router.push('/splash')} className="text-gray-400 mb-4"><i className="fa-solid fa-arrow-left"></i> Back</button>
+        <h2 className="text-2xl font-bold text-gray-800">Login</h2>
+        <p className="text-gray-500 text-sm">Enter your mobile number to access your farm dashboard.</p>
+      </div>
 
-        <section className="space-y-3">
-          <label className="block text-xs font-medium text-zinc-700">Mobile number</label>
-          <div className="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-2">
-            <span className="text-sm font-medium text-zinc-700">+91</span>
-            <input
-              className="flex-1 border-none bg-transparent text-sm outline-none"
-              placeholder="9876543210"
+      <div className="space-y-4">
+        <div>
+          <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Mobile Number</label>
+          <div className="flex items-center border-b-2 border-gray-200 py-2 focus-within:border-yellow-500 transition">
+            <span className="text-lg font-bold text-gray-400 mr-2">+91</span>
+            <input 
+              type="tel" 
+              className="w-full outline-none text-lg font-bold text-gray-800" 
+              placeholder="98765 43210" 
               value={phone}
-              onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
-              maxLength={10}
-              inputMode="numeric"
+              onChange={(e) => setPhone(e.target.value)}
             />
           </div>
-
-          <button
-            onClick={handleNext}
-            className="mt-4 w-full rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm"
-          >
-            Send OTP
-          </button>
-        </section>
+        </div>
+        <button onClick={handleNext} className="w-full bg-green-700 text-white font-bold py-3 rounded-lg mt-6 shadow-md hover:bg-green-800 transition">
+          Send OTP
+        </button>
       </div>
-    </main>
+    </div>
   );
 }
 

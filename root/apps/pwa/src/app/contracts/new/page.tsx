@@ -1,156 +1,94 @@
 'use client';
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-interface NewContractForm {
-  crop: string;
-  quantity: string;
-  unit: string;
-  targetPrice: string;
-  deliveryWindow: string;
-}
-
-const DELIVERY_OPTIONS = [
-  { label: "30 days", value: "Next 1 month" },
-  { label: "60 days", value: "Next 2 months" },
-  { label: "90 days", value: "Next 3 months" },
-];
-
-export default function NewContractPage() {
+export default function CreateContractPage() {
   const router = useRouter();
-  const [form, setForm] = useState<NewContractForm>({
-    crop: "Soybean",
-    quantity: "",
-    unit: "quintal",
-    targetPrice: "",
-    deliveryWindow: "Next 1 month",
-  });
+  const [loading, setLoading] = useState(false);
+  const [quantity, setQuantity] = useState(50);
+  const [price, setPrice] = useState(4800);
 
-  function updateField<K extends keyof NewContractForm>(key: K, value: NewContractForm[K]) {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  }
-
-  async function handleCreate() {
-    if (!form.quantity || !form.targetPrice) {
-      alert("Please enter quantity and target price.");
-      return;
-    }
-
-    const res = await fetch("/api/contracts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        crop: form.crop,
-        quantity: Number(form.quantity),
-        unit: form.unit,
-        targetPrice: Number(form.targetPrice),
-        deliveryWindow: form.deliveryWindow,
-      }),
-    });
-
-    if (!res.ok) {
-      alert("Failed to create contract");
-      return;
-    }
-
-    const created = (await res.json()) as { id?: string };
-    if (created?.id) {
-      router.push(`/contracts/${created.id}`);
-    } else {
-      router.push("/contracts");
-    }
+  if (loading) {
+    return (
+      <div className="h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-16 h-16 border-4 border-gray-200 border-t-yellow-500 rounded-full animate-spin mb-6"></div>
+        <h3 className="text-xl font-bold text-gray-800 mb-2">Processing Contract</h3>
+        <ul className="text-left text-sm text-gray-500 space-y-2 mt-4">
+          <li className="flex items-center gap-2"><i className="fa-solid fa-check-circle text-green-500"></i> Saving details</li>
+          <li className="flex items-center gap-2"><i className="fa-solid fa-check-circle text-green-500"></i> Generating PDF E-Contract</li>
+          <li className="flex items-center gap-2"><i className="fa-solid fa-circle-notch fa-spin text-yellow-500"></i> Anchoring to Blockchain...</li>
+        </ul>
+        <button onClick={() => router.push('/contracts/123')} className="mt-8 text-blue-600 font-bold text-sm">Simulate Completion</button>
+      </div>
+    );
   }
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-[420px] bg-white px-4 pb-20 pt-4">
-      <header className="mb-3">
-        <h1 className="text-lg font-semibold text-zinc-900">Create Forward Contract</h1>
-        <p className="text-xs text-zinc-600">Fill crop, quantity, price & duration</p>
-      </header>
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="bg-white p-4 shadow-sm flex items-center gap-4">
+        <button onClick={() => router.push('/')} className="text-gray-600"><i className="fa-solid fa-arrow-left"></i></button>
+        <h2 className="font-bold text-lg">New Contract</h2>
+      </div>
 
-      {/* Step 1: Crop & quantity */}
-      <section className="space-y-2">
-        <label className="block text-xs font-medium text-zinc-700">Crop</label>
-        <select
-          className="w-full rounded-xl border border-zinc-200 bg-white p-2 text-sm"
-          value={form.crop}
-          onChange={(e) => updateField("crop", e.target.value)}
-        >
-          <option value="Soybean">Soybean</option>
-          <option value="Mustard">Mustard</option>
-          <option value="Groundnut">Groundnut</option>
-        </select>
+      <div className="p-5 space-y-6">
+        <div>
+          <label className="text-xs font-bold text-gray-500 uppercase">Crop</label>
+          <div className="flex items-center bg-white p-3 rounded-lg border border-gray-200 mt-1">
+            <i className="fa-solid fa-leaf text-green-600 mr-3"></i>
+            <span className="font-bold">Soybean</span>
+          </div>
+        </div>
 
-        <label className="mt-3 block text-xs font-medium text-zinc-700">Quantity</label>
-        <div className="flex gap-2">
-          <input
-            className="flex-1 rounded-xl border border-zinc-200 bg-white p-2 text-sm"
-            placeholder="e.g. 50"
-            value={form.quantity}
-            onChange={(e) => updateField("quantity", e.target.value)}
-            type="number"
-            min={0}
+        <div>
+          <label className="text-xs font-bold text-gray-500 uppercase">Quantity (Quintals)</label>
+          <input 
+            type="number" 
+            value={quantity}
+            onChange={(e) => setQuantity(Number(e.target.value))}
+            className="w-full text-3xl font-bold bg-transparent border-b-2 border-gray-300 py-2 focus:border-yellow-500 outline-none mt-1" 
           />
-          <select
-            className="rounded-xl border border-zinc-200 bg-white p-2 text-sm"
-            value={form.unit}
-            onChange={(e) => updateField("unit", e.target.value)}
-          >
-            <option value="quintal">quintal</option>
-            <option value="kg">kg</option>
-            <option value="tonne">tonne</option>
-          </select>
+          <p className="text-xs text-gray-400 mt-1">Min: 10 Qtl • Max: 500 Qtl</p>
         </div>
 
-        {/* Step 2: Price & duration */}
-        <label className="mt-3 block text-xs font-medium text-zinc-700">Target price (per unit)</label>
-        <input
-          className="w-full rounded-xl border border-zinc-200 bg-white p-2 text-sm"
-          placeholder="e.g. ₹4250"
-          value={form.targetPrice}
-          onChange={(e) => updateField("targetPrice", e.target.value)}
-          type="number"
-          min={0}
-        />
-
-        <label className="mt-3 block text-xs font-medium text-zinc-700">Duration &amp; delivery window</label>
-        <div className="mt-1 flex gap-2 text-xs">
-          {DELIVERY_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => updateField("deliveryWindow", opt.value)}
-              className={`flex-1 rounded-full border px-3 py-1 ${
-                form.deliveryWindow === opt.value
-                  ? "border-emerald-500 bg-emerald-50 text-emerald-800"
-                  : "border-zinc-200 bg-white text-zinc-700"
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
+        <div>
+          <div className="flex justify-between">
+            <label className="text-xs font-bold text-gray-500 uppercase">Strike Price / Qtl</label>
+            <span className="text-xs font-bold text-green-600">Suggested: ₹4,800</span>
+          </div>
+          <div className="mt-3 bg-white p-4 rounded-xl border border-gray-200">
+            <div className="text-center mb-2">
+              <span className="text-3xl font-bold text-gray-800">₹{price.toLocaleString()}</span>
+            </div>
+            <input 
+              type="range" 
+              min="4500" 
+              max="5200" 
+              value={price}
+              onChange={(e) => setPrice(Number(e.target.value))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" 
+            />
+            <div className="flex justify-between text-[10px] text-gray-400 mt-2">
+              <span>₹4,500</span>
+              <span>₹5,200</span>
+            </div>
+          </div>
         </div>
 
-        {/* Preview & confirm */}
-        <div className="mt-4 rounded-2xl bg-emerald-50 p-3 text-sm text-emerald-900">
-          <p className="text-xs font-medium uppercase tracking-wide text-emerald-700">Preview</p>
-          <p className="mt-1">
-            You are locking <span className="font-semibold">{form.quantity || "__"}</span> {form.unit} of {form.crop}
-            {" "}
-            at a target price of <span className="font-semibold">{form.targetPrice || "__"}</span> for
-            {" "}
-            <span className="font-semibold">{form.deliveryWindow}</span>.
+        <div className="bg-green-900 text-white p-4 rounded-xl shadow-lg">
+          <div className="flex justify-between items-center mb-2 border-b border-green-700 pb-2">
+            <span className="text-xs text-green-300">Est. Earnings</span>
+            <span className="font-bold text-lg">₹{(quantity * price).toLocaleString()}</span>
+          </div>
+          <p className="text-xs text-green-200 leading-tight">
+            You are offering to sell <strong>{quantity} Qtl</strong> Soybean at <strong>₹{price.toLocaleString()}</strong>. This contract will be valid for 30 days.
           </p>
         </div>
 
-        <button
-          className="mt-3 w-full rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm"
-          onClick={handleCreate}
-        >
-          Create Contract
+        <button onClick={() => setLoading(true)} className="w-full bg-yellow-500 hover:bg-yellow-600 text-green-900 font-bold py-4 rounded-xl shadow-md">
+          Publish Contract
         </button>
-      </section>
-    </main>
+      </div>
+    </div>
   );
 }

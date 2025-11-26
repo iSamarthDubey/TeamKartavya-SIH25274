@@ -48,40 +48,24 @@ export default function OtpPage() {
   }
 
   return (
-    <main className="flex min-h-screen justify-center bg-zinc-50">
-      <div className="flex min-h-screen w-full max-w-[420px] flex-col bg-white px-4 pb-10 pt-6">
-        <header className="mb-6">
-          <p className="text-xs font-medium uppercase tracking-wide text-emerald-700">
-            OTP verification
-          </p>
-          <h1 className="text-lg font-semibold text-zinc-900">Enter the 6-digit code</h1>
-          <p className="mt-1 text-xs text-zinc-600">
-            We sent an SMS code to +91 {phone || "your number"}.
-          </p>
-        </header>
-
-        <section className="space-y-4">
-          <div className="flex gap-2">
-            <input
-              className="h-10 w-full rounded-xl border border-zinc-200 bg-white px-3 text-center text-lg tracking-[0.4em]"
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))}
-              inputMode="numeric"
-              maxLength={6}
-            />
-          </div>
-
-          <p className="text-[11px] text-zinc-500">For demo, any 6 digits will continue.</p>
-
-          <button
-            onClick={handleVerify}
-            className="mt-2 w-full rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm"
-          >
-            Verify &amp; Continue
-          </button>
-        </section>
+    <div className="h-screen bg-white p-6">
+      <div className="mt-10 mb-8 text-center">
+        <h2 className="text-2xl font-bold text-gray-800">Verify OTP</h2>
+        <p className="text-gray-500 text-sm">Sent to +91 {phone || "98765 43210"}</p>
       </div>
-    </main>
+
+      <div className="flex justify-center gap-3 mb-8">
+        <input type="text" value="4" className="w-12 h-14 border-2 border-gray-200 rounded-lg text-center text-2xl font-bold focus:border-yellow-500 outline-none" readOnly />
+        <input type="text" value="2" className="w-12 h-14 border-2 border-gray-200 rounded-lg text-center text-2xl font-bold focus:border-yellow-500 outline-none" readOnly />
+        <input type="text" value="0" className="w-12 h-14 border-2 border-gray-200 rounded-lg text-center text-2xl font-bold focus:border-yellow-500 outline-none" readOnly />
+        <input type="text" value="5" className="w-12 h-14 border-2 border-gray-200 rounded-lg text-center text-2xl font-bold focus:border-yellow-500 outline-none" readOnly />
+      </div>
+
+      <button onClick={handleVerify} className="w-full bg-green-700 text-white font-bold py-3 rounded-lg shadow-md hover:bg-green-800 transition">
+        Verify & Login
+      </button>
+      <p className="text-center text-xs text-gray-400 mt-4">Resend OTP in 20s</p>
+    </div>
   );
 }
 

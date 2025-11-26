@@ -1,69 +1,52 @@
-import { getForecastSummary } from "../../lib/forecast";
-import Link from "next/link";
+'use client';
 
-export default async function ForecastPage() {
-  const summary = await getForecastSummary();
+import { useRouter } from "next/navigation";
 
-  const cropName = summary.cropName;
-  const todayPrice = summary.currentPriceText;
-  const forecastSummary = summary.mainSummary;
-  const forecastRange = summary.rangeText;
+export default function ForecastPage() {
+  const router = useRouter();
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-[420px] bg-white px-4 pb-20 pt-4">
-      <header className="mb-3">
-        <h1 className="text-lg font-semibold text-zinc-900">Price forecast</h1>
-        <p className="text-xs text-zinc-600">Next 90 days outlook for your crop</p>
-      </header>
+    <div className="min-h-screen bg-white pb-20">
+      <div className="bg-white p-4 border-b border-gray-100 flex items-center gap-4 sticky top-0 z-40">
+        <button onClick={() => router.push('/')} className="text-gray-600"><i className="fa-solid fa-arrow-left"></i></button>
+        <h2 className="font-bold text-lg">Price Forecast</h2>
+      </div>
+      
+      <div className="p-4">
+        <div className="bg-gray-50 p-3 rounded-lg mb-4 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+               <i className="fa-solid fa-filter text-gray-400"></i>
+               <span className="font-bold text-sm">Soybean</span>
+          </div>
+          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">30 Days</span>
+        </div>
 
-      <section className="space-y-3 text-sm">
-        {/* Crop selector */}
-        <div className="rounded-2xl border border-zinc-100 bg-white p-3 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Crop</p>
-          <p className="mt-1 text-sm font-semibold text-zinc-900">{cropName}</p>
-          <p className="mt-0.5 text-[11px] text-zinc-600">
-            For SIH demo, forecast is shown for a single mandi + crop.
+        <div className="bg-gray-50 border border-gray-200 rounded-xl p-2 h-64 relative mb-4 flex items-center justify-center">
+             <div className="w-full h-full p-4 relative">
+                <div className="absolute bottom-10 left-0 w-full h-px bg-gray-300"></div> <div className="absolute top-0 left-10 w-px h-full bg-gray-300"></div> <svg className="w-full h-full overflow-visible">
+                    <path d="M40,150 Q100,100 180,180 T300,200" fill="none" stroke="#EF4444" strokeWidth="3" />
+                    <circle cx="40" cy="150" r="4" fill="#15803D" /> <circle cx="300" cy="200" r="4" fill="#EF4444" /> </svg>
+                <div className="absolute top-10 right-0 bg-white shadow p-2 rounded text-xs border border-gray-100">
+                    <span className="block text-gray-400">Predicted (Dec 15)</span>
+                    <span className="block font-bold text-red-600">₹4,600 ▼</span>
+                </div>
+             </div>
+        </div>
+
+        <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+          <h4 className="font-bold text-blue-900 text-sm mb-1">AI Insight</h4>
+          <p className="text-xs text-blue-800 leading-relaxed">
+            Based on historical data and current monsoon patterns, prices are expected to fall by 8-10% in the next 3 weeks.
+            <br/><br/>
+            <strong>Recommendation:</strong> Create a forward contract now to lock in current rates.
           </p>
         </div>
 
-        {/* Simple chart placeholder */}
-        <div className="rounded-2xl border border-zinc-100 bg-zinc-50 p-3 text-xs text-zinc-700 shadow-sm">
-          <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">Chart (demo)</p>
-          <p className="mt-1 text-sm font-semibold text-zinc-900">{forecastSummary}</p>
-          <p className="mt-0.5 text-[11px] text-zinc-600">{forecastRange}</p>
-          <div className="mt-3 h-28 rounded-xl bg-gradient-to-r from-emerald-100 via-emerald-50 to-zinc-50" />
-          <p className="mt-1 text-[11px] text-zinc-500">
-            Replace this block with a real line chart using the ML horizons data.
-          </p>
-        </div>
-
-        {/* Explanation */}
-        <div className="rounded-2xl border border-zinc-100 bg-white p-3 text-xs text-zinc-700 shadow-sm">
-          <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">How to read this</p>
-          <p className="mt-1">
-            The model looks at recent mandi prices and patterns, then projects a likely range for the next
-            7, 30 and 90 days. Bands show uncertainty &amp; risk. Use this as a guide, not a guarantee.
-          </p>
-        </div>
-
-        {/* CTA into Create Contract */}
-        <div className="mt-2 rounded-2xl bg-orange-50 p-3 text-sm text-orange-900">
-          <p className="text-xs font-medium uppercase tracking-wide text-orange-700">Next step</p>
-          <p className="mt-1 text-sm font-semibold">
-            Lock a part of your harvest price using today's information.
-          </p>
-          <p className="mt-1 text-xs text-orange-800">
-            You can start small (40–60%) and increase as you get comfortable.
-          </p>
-          <Link
-            href="/contracts/new"
-            className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm"
-          >
-            Create Forward Contract
-          </Link>
-        </div>
-      </section>
-    </main>
+        <button onClick={() => router.push('/contracts/new')} className="w-full bg-yellow-500 text-green-900 font-bold py-4 rounded-xl shadow-md mt-6">
+          Create Forward Contract
+        </button>
+      </div>
+    </div>
   );
 }
 

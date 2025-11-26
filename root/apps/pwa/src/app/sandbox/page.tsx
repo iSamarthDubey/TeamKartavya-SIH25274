@@ -1,149 +1,47 @@
 'use client';
 
-import { useState } from "react";
-
-interface Scenario {
-  id: string;
-  name: string;
-  description: string;
-  startPrice: number;
-  endPrice: number;
-}
-
-const SCENARIOS: Scenario[] = [
-  {
-    id: "crash",
-    name: "Last year crash",
-    description: "Simulated 20% price drop before harvest",
-    startPrice: 4250,
-    endPrice: 3400,
-  },
-  {
-    id: "normal",
-    name: "Normal year",
-    description: "Price moves slightly up by harvest",
-    startPrice: 4250,
-    endPrice: 4550,
-  },
-];
-
-function computePnl(quantityQuintal: number, scenario: Scenario, hedgeShare: number) {
-  const qty = quantityQuintal;
-  const start = scenario.startPrice;
-  const end = scenario.endPrice;
-  const strike = start; // simplification: hedge at today price
-
-  const unhedgedIncome = qty * end;
-  const hedgedQty = qty * hedgeShare;
-  const unhedgedQty = qty - hedgedQty;
-
-  const hedgedIncome = hedgedQty * strike + unhedgedQty * end;
-
-  return { unhedgedIncome, hedgedIncome };
-}
+import { useRouter } from "next/navigation";
 
 export default function SandboxPage() {
-  const [selected, setSelected] = useState<Scenario | null>(null);
-  const [quantity, setQuantity] = useState<string>("50");
-  const [hedgeShare, setHedgeShare] = useState<number>(0.6);
-
-  const parsedQty = Number(quantity) || 0;
-  const pnl = selected && parsedQty > 0
-    ? computePnl(parsedQty, selected, hedgeShare)
-    : null;
+  const router = useRouter();
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-[420px] bg-white px-4 pb-20 pt-4">
-      <header className="mb-3">
-        <h1 className="text-lg font-semibold text-zinc-900">Sandbox</h1>
-        <p className="text-xs text-zinc-600">Practice hedging without risk</p>
+    <div className="min-h-screen bg-purple-50 pb-20">
+      <header className="bg-purple-800 text-white p-5 rounded-b-3xl shadow-lg">
+        <div className="flex items-center gap-3 mb-4">
+          <button onClick={() => router.push('/')} className="text-purple-200"><i className="fa-solid fa-arrow-left"></i></button>
+          <h1 className="text-xl font-bold">Sandbox Mode</h1>
+        </div>
+        <div className="flex justify-between items-end">
+          <div>
+            <p className="text-purple-200 text-xs">Virtual Balance</p>
+            <h2 className="text-3xl font-bold">₹10,00,000</h2>
+          </div>
+          <div className="text-right">
+            <span className="bg-purple-600 px-2 py-1 rounded text-xs font-bold">Lvl 1 Rookie</span>
+          </div>
+        </div>
       </header>
 
-      {/* Scenario cards */}
-      <div className="space-y-2">
-        {SCENARIOS.map((scenario) => (
-          <button
-            key={scenario.id}
-            className={`w-full rounded-2xl border px-4 py-3 text-left text-sm shadow-sm ${
-              selected?.id === scenario.id
-                ? "border-emerald-500 bg-emerald-50"
-                : "border-zinc-100 bg-white"
-            }`}
-            onClick={() => setSelected(scenario)}
-          >
-            <p className="font-semibold">{scenario.name}</p>
-            <p className="mt-0.5 text-xs text-zinc-600">{scenario.description}</p>
-            <p className="mt-1 text-[11px] text-zinc-500">
-              From ₹{scenario.startPrice.toLocaleString()} → ₹{scenario.endPrice.toLocaleString()} per quintal
-            </p>
-          </button>
-        ))}
-      </div>
-
-      {/* Inputs + result */}
-      <section className="mt-4 rounded-2xl border border-zinc-100 bg-white p-4 text-sm shadow-sm">
-        <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Your farm</p>
-        <div className="mt-2 flex items-center gap-2">
-          <label className="text-xs text-zinc-700">Expected output</label>
-          <input
-            className="flex-1 rounded-xl border border-zinc-200 bg-white p-2 text-xs"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            type="number"
-            min={0}
-          />
-          <span className="text-xs text-zinc-600">quintal</span>
-        </div>
-
-        <div className="mt-3 flex items-center gap-2 text-xs">
-          <label className="text-xs text-zinc-700">Hedge share</label>
-          <button
-            className={`flex-1 rounded-full border px-2 py-1 ${
-              hedgeShare === 0.4 ? "border-emerald-500 bg-emerald-50" : "border-zinc-200 bg-white"
-            }`}
-            onClick={() => setHedgeShare(0.4)}
-          >
-            40%
-          </button>
-          <button
-            className={`flex-1 rounded-full border px-2 py-1 ${
-              hedgeShare === 0.6 ? "border-emerald-500 bg-emerald-50" : "border-zinc-200 bg-white"
-            }`}
-            onClick={() => setHedgeShare(0.6)}
-          >
-            60%
-          </button>
-          <button
-            className={`flex-1 rounded-full border px-2 py-1 ${
-              hedgeShare === 0.8 ? "border-emerald-500 bg-emerald-50" : "border-zinc-200 bg-white"
-            }`}
-            onClick={() => setHedgeShare(0.8)}
-          >
-            80%
-          </button>
-        </div>
-
-        {pnl ? (
-          <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
-            <div className="rounded-xl bg-zinc-50 p-3">
-              <p className="text-[11px] font-medium text-zinc-500">Without hedge</p>
-              <p className="mt-1 text-sm font-semibold text-zinc-900">
-                ₹{pnl.unhedgedIncome.toLocaleString()}
-              </p>
-            </div>
-            <div className="rounded-xl bg-emerald-50 p-3">
-              <p className="text-[11px] font-medium text-emerald-800">With hedge</p>
-              <p className="mt-1 text-sm font-semibold text-emerald-900">
-                ₹{pnl.hedgedIncome.toLocaleString()}
-              </p>
-            </div>
+      <div className="p-5 space-y-4">
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-purple-100 text-center">
+          <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-2">
+            <i className="fa-solid fa-graduation-cap text-xl"></i>
           </div>
-        ) : (
-          <p className="mt-4 text-[11px] text-zinc-500">
-            Select a scenario and enter your expected output to compare incomes.
-          </p>
-        )}
-      </section>
-    </main>
+          <h3 className="font-bold text-gray-800">Learn Risk-Free</h3>
+          <p className="text-xs text-gray-500 mt-1">Practice trading without losing real money. Try creating a contract now.</p>
+        </div>
+
+        <h3 className="font-bold text-gray-700 text-sm">Practice History</h3>
+        <div className="text-center py-8 opacity-50">
+          <i className="fa-solid fa-box-open text-4xl text-gray-300 mb-2"></i>
+          <p className="text-sm text-gray-400">No practice trades yet</p>
+        </div>
+
+        <button className="w-full bg-purple-600 text-white font-bold py-3 rounded-lg shadow-md">
+          Start New Practice Trade
+        </button>
+      </div>
+    </div>
   );
 }
