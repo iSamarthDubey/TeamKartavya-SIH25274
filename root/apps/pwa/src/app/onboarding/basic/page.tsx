@@ -34,9 +34,30 @@ export default function OnboardingBasicPage() {
     setProfile((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleNext() {
+  async function handleNext() {
     if (typeof window !== "undefined") {
-      window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
+      // Update profile with onboarded flag
+      const updatedProfile = { ...profile, onboardingCompleted: true };
+      window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(updatedProfile));
+      
+      // Save to database
+      const userId = window.localStorage.getItem("kh_user_id");
+      if (userId && profile.name && profile.district) {
+        try {
+          await fetch('/api/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId,
+              name: profile.name,
+              location: profile.district,
+              crops: ['soybean'],
+            }),
+          });
+        } catch (error) {
+          console.error('Failed to save profile:', error);
+        }
+      }
     }
     router.push("/");
   }

@@ -53,9 +53,12 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { crop, quantity, unit, targetPrice, deliveryWindow } = body || {};
+    const { crop, quantity, unit, targetPrice, deliveryWindow, userId } = body || {};
+
+    console.log('[CONTRACTS] POST request:', { crop, quantity, unit, targetPrice, deliveryWindow, userId });
 
     if (!crop || !quantity || !unit || !targetPrice || !deliveryWindow) {
+      console.error('[CONTRACTS] Missing required fields:', { crop, quantity, unit, targetPrice, deliveryWindow });
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -69,7 +72,10 @@ export async function POST(req: NextRequest) {
       strike_price: Number(targetPrice),
       delivery_window: deliveryWindow,
       status: "CREATED",
+      farmer_id: userId || null,
     };
+
+    console.log('[CONTRACTS] Inserting:', insertRow);
 
     const { data, error } = await supabase
       .from("contracts")
@@ -78,8 +84,11 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (error) {
+      console.error('[CONTRACTS] Database error:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
+    console.log('[CONTRACTS] Success:', data);
 
     const contract = {
       id: data.id,
@@ -96,7 +105,8 @@ export async function POST(req: NextRequest) {
     };
 
     return NextResponse.json(contract, { status: 201 });
-  } catch (e) {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  } catch (e: any) {
+    console.error('[CONTRACTS] Exception:', e);
+    return NextResponse.json({ error: e.message || "Invalid JSON" }, { status: 400 });
   }
 }

@@ -55,6 +55,7 @@ export default function OtpPage() {
         onboardingCompleted: data.user.onboarded
       };
       window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
+      window.localStorage.setItem("kh_user_id", data.user.id); // Store user ID for API calls
 
       // Route based on onboarding status
       if (data.user.onboarded) {

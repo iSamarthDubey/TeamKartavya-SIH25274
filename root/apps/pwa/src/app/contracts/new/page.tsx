@@ -36,31 +36,43 @@ function CreateContractContent() {
     }
 
     try {
+      const userId = window.localStorage.getItem("kh_user_id");
+      console.log('[CONTRACT CREATE] User ID:', userId);
+      
+      const payload = {
+        crop,
+        quantity,
+        unit: 'Qtl',
+        targetPrice: price,
+        deliveryWindow: '30 Days',
+        userId
+      };
+      console.log('[CONTRACT CREATE] Payload:', payload);
+      
       const res = await fetch('/api/contracts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          crop,
-          quantity,
-          unit: 'Qtl',
-          targetPrice: price,
-          deliveryWindow: '30 Days'
-        })
+        body: JSON.stringify(payload)
       });
+      
+      console.log('[CONTRACT CREATE] Response status:', res.status);
       
       if (res.ok) {
         const data = await res.json();
+        console.log('[CONTRACT CREATE] Success:', data);
         // Wait a bit to show the loading animation
         setTimeout(() => {
            router.push(`/contracts/${data.id}`);
         }, 2000);
       } else {
-        alert('Failed to create contract');
+        const errorData = await res.json();
+        console.error('[CONTRACT CREATE] Error response:', errorData);
+        alert('Failed to create contract: ' + (errorData.error || 'Unknown error'));
         setLoading(false);
       }
     } catch (e) {
-      console.error(e);
-      alert('Error creating contract');
+      console.error('[CONTRACT CREATE] Exception:', e);
+      alert('Error creating contract: ' + (e instanceof Error ? e.message : 'Unknown error'));
       setLoading(false);
     }
   }
