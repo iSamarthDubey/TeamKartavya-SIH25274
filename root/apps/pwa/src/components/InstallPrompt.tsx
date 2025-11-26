@@ -33,29 +33,32 @@ export default function InstallPrompt() {
   if (!show) return null;
 
   return (
-    <div className="fixed bottom-20 left-0 w-full px-4 z-40 flex justify-center">
-      <div className="bg-green-900 text-white p-4 rounded-xl shadow-2xl flex items-center justify-between w-full max-w-md border border-green-700">
+    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[90%] max-w-[360px] z-50 animate-in slide-in-from-bottom-6 fade-in duration-700">
+      <div className="relative bg-slate-900/90 backdrop-blur-xl border border-white/10 text-white p-3 rounded-2xl shadow-2xl flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-yellow-400 rounded-lg flex items-center justify-center text-green-900 shadow-sm">
-            <i className="fa-solid fa-wheat-awn text-xl"></i>
+          <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center overflow-hidden shrink-0 border border-white/10">
+             <img src="/icon.png" alt="App Icon" className="w-full h-full object-cover" />
           </div>
-          <div>
-            <h3 className="font-bold text-sm">Install App</h3>
-            <p className="text-xs text-green-300">Add to Home Screen</p>
+          <div className="flex flex-col">
+            <h3 className="font-semibold text-sm text-white leading-tight">Krishi Hedge</h3>
+            <p className="text-[10px] text-slate-400 mt-0.5 font-medium">Add to Home Screen</p>
           </div>
         </div>
-        <button 
-          onClick={handleInstall}
-          className="bg-white text-green-900 px-4 py-2 rounded-lg font-bold text-xs shadow hover:bg-gray-100 transition"
-        >
-          Install
-        </button>
-        <button 
-          onClick={() => setShow(false)}
-          className="absolute -top-2 -right-2 bg-gray-200 text-gray-600 rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-sm"
-        >
-          <i className="fa-solid fa-times"></i>
-        </button>
+        
+        <div className="flex items-center gap-2 shrink-0">
+            <button 
+            onClick={() => setShow(false)}
+            className="w-7 h-7 flex items-center justify-center text-slate-500 hover:text-white rounded-full hover:bg-white/10 transition-colors"
+            >
+            <i className="fa-solid fa-xmark text-xs"></i>
+            </button>
+            <button 
+            onClick={handleInstall}
+            className="bg-white text-slate-900 px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-lg hover:bg-slate-100 active:scale-95 transition-all"
+            >
+            Install
+            </button>
+        </div>
       </div>
     </div>
   );

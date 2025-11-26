@@ -3,6 +3,7 @@ import { Noto_Sans } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import InstallPrompt from "@/components/InstallPrompt";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 const notoSans = Noto_Sans({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
       >
         <div className="flex justify-center min-h-screen">
           <div className="w-full max-w-md bg-gray-50 min-h-screen shadow-2xl relative overflow-hidden flex flex-col">
+            <ServiceWorkerRegister />
             {children}
             <InstallPrompt />
             <BottomNav />
