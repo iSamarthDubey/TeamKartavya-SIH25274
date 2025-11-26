@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import NotificationBell from "./NotificationBell";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -49,7 +50,7 @@ export default function HomeScreen() {
             </div>
             <span className="font-bold text-lg tracking-tight">Krishi Hedge</span>
           </div>
-          <i className="fa-solid fa-bell"></i>
+          <NotificationBell />
         </div>
         <h1 className="text-2xl font-bold">Namaste, {name}</h1>
         <p className="text-green-200 text-sm">Market is {forecast?.trend || 'volatile'} today.</p>
