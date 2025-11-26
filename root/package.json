@@ -1,0 +1,18 @@
+{
+  "name": "sih-hedging-platform",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:pwa": "pnpm --filter @app/pwa dev",
+    "dev:admin-web": "pnpm --filter @app/admin-web dev",
+    "dev:functions": "pnpm --filter @svc/functions dev",
+    "dev:ml": "python services/ml/train.py",
+    "lint": "pnpm lint --recursive",
+    "test": "pnpm test --recursive"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
+

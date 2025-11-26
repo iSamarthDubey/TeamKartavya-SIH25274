@@ -1,0 +1,119 @@
+# Dependencies
+node_modules/
+*/node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+*.tgz
+*.tar.gz
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Coverage directory
+coverage/
+*.lcov
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Next.js build output
+.next
+
+# Expo
+.expo/
+.expo-shared/
+
+# React Native
+*.orig.*
+web-build/
+
+# Python (for ML service)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# ML models and data
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+models/
+data/
+
+# TypeScript
+*.tsbuildinfo
+
+# Database
+*.db
+*.sqlite
+
+# Cache
+.cache/
+.turbo/
+.swc/
+
+# Documentation and planning files
+WARP.md
+RepositoryStructure.txt
+Stack.txt
+prototyping-blueprint.txt
+DEMO_SCRIPT.md
+KRISHI_HEDGE_COMPLETE_GUIDE.md
+docs/PITCH_DECK_KRISHI_HEDGE.md
+docs/SIH_PITCH_TEMPLATE_MAP.md
+docs/SIH_PPT_README.md
+docs/COMPLETE_PPT_GUIDE.md
+docs/FINAL_6SLIDE_PPT_GUIDE.md
+docs/PS25274_COMPLIANCE_GUIDE.md
+docs/PPT_CORRECTIONS_SUMMARY.md
