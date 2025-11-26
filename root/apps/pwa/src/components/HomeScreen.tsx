@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import NotificationBell from "./NotificationBell";
+import { NotificationBell } from "./NotificationBell";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -16,12 +16,44 @@ export default function HomeScreen() {
       if (!phone) {
         router.replace('/splash');
       }
-      const profile = window.localStorage.getItem("kh_profile");
-      if (profile) {
-        try {
-          const p = JSON.parse(profile);
-          if (p.name) setName(p.name);
-        } catch (e) {}
+      
+      // Try to load profile from database first
+      const userId = window.localStorage.getItem("kh_user_id");
+      if (userId) {
+        fetch(`/api/profile?userId=${userId}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.name) {
+              setName(data.name);
+              // Update localStorage with fresh data
+              const existingProfile = window.localStorage.getItem("kh_profile");
+              if (existingProfile) {
+                const parsed = JSON.parse(existingProfile);
+                const updated = { ...parsed, name: data.name, location: data.location, crops: data.crops };
+                window.localStorage.setItem("kh_profile", JSON.stringify(updated));
+              }
+            }
+          })
+          .catch(err => {
+            console.error('Failed to load profile from DB:', err);
+            // Fallback to localStorage
+            const profile = window.localStorage.getItem("kh_profile");
+            if (profile) {
+              try {
+                const p = JSON.parse(profile);
+                if (p.name) setName(p.name);
+              } catch (e) {}
+            }
+          });
+      } else {
+        // No userId, fallback to localStorage
+        const profile = window.localStorage.getItem("kh_profile");
+        if (profile) {
+          try {
+            const p = JSON.parse(profile);
+            if (p.name) setName(p.name);
+          } catch (e) {}
+        }
       }
     }
   }, [router]);
