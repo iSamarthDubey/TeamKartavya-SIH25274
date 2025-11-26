@@ -29,73 +29,83 @@ export default async function MarketContractDetailPage({ params }: PageProps) {
 
   if (!contract) {
     return (
-      <main className="mx-auto min-h-screen w-full max-w-[420px] bg-white px-4 pb-20 pt-4 text-sm">
-        <header className="mb-3 flex items-center gap-2">
-          <Link
-            href="/market"
-            className="rounded-full border border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-700"
-          >
-            Back
-          </Link>
-          <h1 className="text-lg font-semibold text-zinc-900">Forward</h1>
-        </header>
-        <div className="rounded-2xl border border-zinc-100 bg-white p-4 text-sm shadow-sm">
-          <p className="text-zinc-700">Forward not found.</p>
+      <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="bg-white p-4 shadow-sm mb-4 flex items-center gap-3">
+          <Link href="/market" className="text-gray-600"><i className="fa-solid fa-arrow-left"></i></Link>
+          <h1 className="text-xl font-bold text-gray-800">Details</h1>
         </div>
-      </main>
+        <div className="p-4">
+          <div className="bg-white p-6 rounded-xl shadow-sm text-center">
+            <p className="text-gray-800 font-bold">Forward not found</p>
+          </div>
+        </div>
+      </div>
     );
   }
 
   async function acceptForward() {
     "use server";
+    if (!contract) return;
     await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/contracts/${contract.id}/accept`, {
       method: 'POST',
     }).catch(() => null as any);
   }
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-[420px] bg-white px-4 pb-20 pt-4 text-sm">
-      <header className="mb-3 flex items-center gap-2">
-        <Link
-          href="/market"
-          className="rounded-full border border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-700"
-        >
-          Back
-        </Link>
-        <h1 className="text-lg font-semibold text-zinc-900">Forward details</h1>
-      </header>
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="bg-white p-4 shadow-sm mb-4 flex items-center gap-3">
+        <Link href="/market" className="text-gray-600"><i className="fa-solid fa-arrow-left"></i></Link>
+        <h1 className="text-xl font-bold text-green-800">Forward Details</h1>
+      </div>
 
-      <section className="space-y-3 text-sm">
-        <div className="rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Contract</p>
-          <p className="mt-1 text-sm font-semibold text-zinc-900">
-            {contract.crop} • {contract.quantity} {contract.unit}
-          </p>
-          <p className="mt-1 text-xs text-zinc-700">
-            Strike price: ₹{contract.strikePrice} / {contract.unit}
-          </p>
-          <p className="mt-0.5 text-xs text-zinc-700">Window: {contract.deliveryWindow}</p>
-          <p className="mt-0.5 text-[11px] text-zinc-500">
-            Farmer details are hidden in this demo; admin can see full KYC on the dashboard.
-          </p>
+      <div className="p-4 space-y-4">
+        <div className="bg-white p-5 rounded-xl shadow-sm border-l-4 border-green-500">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-xs text-gray-500 uppercase font-bold">Crop</p>
+              <h2 className="text-2xl font-bold text-gray-800">{contract.crop}</h2>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-gray-500 uppercase font-bold">Quantity</p>
+              <p className="text-xl font-bold text-gray-800">{contract.quantity} {contract.unit}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4">
+            <div>
+              <p className="text-xs text-gray-500">Strike Price</p>
+              <p className="text-lg font-bold text-green-700">₹{contract.strikePrice}/{contract.unit}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-gray-500">Delivery Window</p>
+              <p className="text-sm font-bold text-gray-700">{contract.deliveryWindow}</p>
+            </div>
+          </div>
+          
+          <div className="mt-4 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+            <p className="text-xs text-yellow-800">
+              <i className="fa-solid fa-info-circle mr-1"></i>
+              Farmer details are hidden. Admin verifies KYC.
+            </p>
+          </div>
         </div>
 
-        <div className="rounded-2xl border border-zinc-100 bg-white p-4 text-xs text-zinc-700 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Actions</p>
-          <p className="mt-1">
-            For SIH, "Accept" will simply mark this forward as "MATCHED WITH BUYER (demo)".
+        <div className="bg-white p-5 rounded-xl shadow-sm">
+          <h3 className="font-bold text-gray-800 mb-2">Actions</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Accepting this forward will lock the price and notify the farmer.
           </p>
-          <form action={acceptForward} className="mt-3 space-y-2">
+          <form action={acceptForward}>
             <button
               type="submit"
-              className="w-full rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm"
+              className="w-full bg-green-700 text-white font-bold py-3 rounded-lg shadow-md hover:bg-green-800 transition flex items-center justify-center gap-2"
             >
-              Accept forward (demo)
+              <i className="fa-solid fa-check-circle"></i> Accept Forward
             </button>
           </form>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
   );
 }
 

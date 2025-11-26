@@ -54,7 +54,8 @@ export default function OnboardingBasicPage() {
           <input 
             type="text" 
             className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 mt-1" 
-            value={profile.name || "Ram Kishan"}
+            value={profile.name || ""}
+            placeholder="Enter your name"
             onChange={(e) => update("name", e.target.value)}
           />
         </div>
@@ -62,9 +63,10 @@ export default function OnboardingBasicPage() {
           <label className="text-xs font-bold text-gray-500">District</label>
           <select 
             className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 mt-1"
-            value={profile.district || "Indore, MP"}
+            value={profile.district || ""}
             onChange={(e) => update("district", e.target.value)}
           >
+            <option value="" disabled>Select District</option>
             <option>Indore, MP</option>
             <option>Dewas, MP</option>
             <option>Ujjain, MP</option>

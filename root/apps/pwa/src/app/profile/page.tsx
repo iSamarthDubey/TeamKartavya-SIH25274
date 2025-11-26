@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const PROFILE_STORAGE_KEY = "kh_profile";
 const ROLE_STORAGE_KEY = "kh_role";
@@ -9,6 +10,32 @@ const HOME_TUTORIAL_KEY = "kh_home_tutorial_seen";
 
 export default function ProfilePage() {
   const router = useRouter();
+  const [profile, setProfile] = useState<any>({
+    name: "Loading...",
+    phone: "...",
+    district: "..."
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem(PROFILE_STORAGE_KEY);
+      const phone = window.localStorage.getItem(PHONE_STORAGE_KEY);
+      if (stored) {
+        const p = JSON.parse(stored);
+        setProfile({
+          name: p.name || "Farmer",
+          phone: p.phone || phone || "Not set",
+          district: p.district || "Not set"
+        });
+      } else {
+        setProfile({
+          name: "Guest Farmer",
+          phone: phone || "Not set",
+          district: "India"
+        });
+      }
+    }
+  }, []);
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
@@ -30,12 +57,12 @@ export default function ProfilePage() {
       <div className="p-4 space-y-4">
         <div className="bg-white p-4 rounded-xl shadow-sm flex items-center gap-4">
             <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center text-green-900 font-bold text-2xl">
-                RK
+                {profile.name.charAt(0)}
             </div>
             <div>
-                <h3 className="font-bold text-lg">Ram Kishan</h3>
-                <p className="text-gray-500 text-sm">+91 98765 43210</p>
-                <p className="text-gray-500 text-xs">Indore, MP</p>
+                <h3 className="font-bold text-lg">{profile.name}</h3>
+                <p className="text-gray-500 text-sm">+91 {profile.phone}</p>
+                <p className="text-gray-500 text-xs">{profile.district}</p>
             </div>
         </div>
 

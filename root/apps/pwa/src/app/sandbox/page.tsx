@@ -38,7 +38,7 @@ export default function SandboxPage() {
           <p className="text-sm text-gray-400">No practice trades yet</p>
         </div>
 
-        <button className="w-full bg-purple-600 text-white font-bold py-3 rounded-lg shadow-md">
+        <button onClick={() => router.push('/contracts/new')} className="w-full bg-purple-600 text-white font-bold py-3 rounded-lg shadow-md">
           Start New Practice Trade
         </button>
       </div>

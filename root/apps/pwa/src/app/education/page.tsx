@@ -2,27 +2,33 @@ import Link from "next/link";
 
 export default function EducationPage() {
   return (
-    <main className="mx-auto min-h-screen w-full max-w-[420px] bg-white px-4 pb-20 pt-4">
-      <header className="mb-3">
-        <h1 className="text-lg font-semibold text-zinc-900">Learn</h1>
-        <p className="text-xs text-zinc-600">Short lessons in simple Hindi & English</p>
-      </header>
-      <div className="space-y-2">
-        <Link
-          href="/education/hedging"
-          className="block rounded-2xl border border-zinc-100 bg-white p-4 text-sm shadow-sm"
-        >
-          <p className="font-semibold">What is hedging?</p>
-          <p className="mt-1 text-xs text-zinc-600">How a forward contract protects your price</p>
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="bg-white p-4 shadow-sm mb-4">
+        <h1 className="text-xl font-bold text-green-800">Education Center</h1>
+        <p className="text-xs text-gray-500">Short lessons in simple Hindi & English</p>
+      </div>
+
+      <div className="p-4 space-y-4">
+        <Link href="/education/hedging" className="block bg-white p-4 rounded-xl shadow-sm border-l-4 border-yellow-500 hover:shadow-md transition">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="font-bold text-gray-800">What is hedging?</h3>
+              <p className="text-sm text-gray-500 mt-1">How a forward contract protects your price</p>
+            </div>
+            <i className="fa-solid fa-shield-alt text-yellow-500 text-xl"></i>
+          </div>
         </Link>
-        <Link
-          href="/education/forecast"
-          className="block rounded-2xl border border-zinc-100 bg-white p-4 text-sm shadow-sm"
-        >
-          <p className="font-semibold">How to read our forecast</p>
-          <p className="mt-1 text-xs text-zinc-600">Understanding bands and uncertainty</p>
+
+        <Link href="/education/forecast" className="block bg-white p-4 rounded-xl shadow-sm border-l-4 border-green-500 hover:shadow-md transition">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="font-bold text-gray-800">How to read our forecast</h3>
+              <p className="text-sm text-gray-500 mt-1">Understanding bands and uncertainty</p>
+            </div>
+            <i className="fa-solid fa-chart-line text-green-500 text-xl"></i>
+          </div>
         </Link>
       </div>
-    </main>
+    </div>
   );
 }

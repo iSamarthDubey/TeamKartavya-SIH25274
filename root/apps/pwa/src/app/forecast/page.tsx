@@ -1,9 +1,18 @@
 'use client';
 
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function ForecastPage() {
   const router = useRouter();
+  const [forecast, setForecast] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('/api/forecast')
+      .then(res => res.json())
+      .then(data => setForecast(data))
+      .catch(console.error);
+  }, []);
 
   return (
     <div className="min-h-screen bg-white pb-20">
@@ -16,7 +25,7 @@ export default function ForecastPage() {
         <div className="bg-gray-50 p-3 rounded-lg mb-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
                <i className="fa-solid fa-filter text-gray-400"></i>
-               <span className="font-bold text-sm">Soybean</span>
+               <span className="font-bold text-sm">{forecast?.crop || 'Soybean'}</span>
           </div>
           <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">30 Days</span>
         </div>
@@ -28,7 +37,7 @@ export default function ForecastPage() {
                     <circle cx="40" cy="150" r="4" fill="#15803D" /> <circle cx="300" cy="200" r="4" fill="#EF4444" /> </svg>
                 <div className="absolute top-10 right-0 bg-white shadow p-2 rounded text-xs border border-gray-100">
                     <span className="block text-gray-400">Predicted (Dec 15)</span>
-                    <span className="block font-bold text-red-600">₹4,600 ▼</span>
+                    <span className="block font-bold text-red-600">₹{forecast?.predictedPrice || '4,600'} ▼</span>
                 </div>
              </div>
         </div>
@@ -36,7 +45,7 @@ export default function ForecastPage() {
         <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
           <h4 className="font-bold text-blue-900 text-sm mb-1">AI Insight</h4>
           <p className="text-xs text-blue-800 leading-relaxed">
-            Based on historical data and current monsoon patterns, prices are expected to fall by 8-10% in the next 3 weeks.
+            {forecast?.insight || 'Based on historical data and current monsoon patterns, prices are expected to fall by 8-10% in the next 3 weeks.'}
             <br/><br/>
             <strong>Recommendation:</strong> Create a forward contract now to lock in current rates.
           </p>

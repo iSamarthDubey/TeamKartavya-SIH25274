@@ -9,6 +9,38 @@ export default function CreateContractPage() {
   const [quantity, setQuantity] = useState(50);
   const [price, setPrice] = useState(4800);
 
+  async function handlePublish() {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/contracts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          crop: 'Soybean',
+          quantity,
+          unit: 'Qtl',
+          targetPrice: price,
+          deliveryWindow: '30 Days'
+        })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        // Wait a bit to show the loading animation
+        setTimeout(() => {
+           router.push(`/contracts/${data.id}`);
+        }, 2000);
+      } else {
+        alert('Failed to create contract');
+        setLoading(false);
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Error creating contract');
+      setLoading(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
@@ -19,7 +51,6 @@ export default function CreateContractPage() {
           <li className="flex items-center gap-2"><i className="fa-solid fa-check-circle text-green-500"></i> Generating PDF E-Contract</li>
           <li className="flex items-center gap-2"><i className="fa-solid fa-circle-notch fa-spin text-yellow-500"></i> Anchoring to Blockchain...</li>
         </ul>
-        <button onClick={() => router.push('/contracts/123')} className="mt-8 text-blue-600 font-bold text-sm">Simulate Completion</button>
       </div>
     );
   }
@@ -85,7 +116,7 @@ export default function CreateContractPage() {
           </p>
         </div>
 
-        <button onClick={() => setLoading(true)} className="w-full bg-yellow-500 hover:bg-yellow-600 text-green-900 font-bold py-4 rounded-xl shadow-md">
+        <button onClick={handlePublish} className="w-full bg-yellow-500 hover:bg-yellow-600 text-green-900 font-bold py-4 rounded-xl shadow-md">
           Publish Contract
         </button>
       </div>
