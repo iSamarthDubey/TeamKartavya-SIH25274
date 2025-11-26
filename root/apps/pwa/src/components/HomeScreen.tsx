@@ -1,9 +1,19 @@
 'use client';
 
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function HomeScreen() {
   const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const phone = window.localStorage.getItem("kh_phone");
+      if (!phone) {
+        router.replace('/splash');
+      }
+    }
+  }, [router]);
 
   return (
     <div className="min-h-screen pb-20 relative bg-gray-50">
@@ -33,7 +43,7 @@ export default function HomeScreen() {
           </div>
         </div>
 
-        <div onClick={() => router.push('/forecast')} className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 p-4 rounded-xl shadow-sm cursor-pointer active:scale-95 transition">
+        <div onClick={() => router.push('/forecast')} className="bg-linear-to-br from-blue-50 to-indigo-50 border border-blue-200 p-4 rounded-xl shadow-sm cursor-pointer active:scale-95 transition">
           <div className="flex items-center gap-2 mb-2">
             <i className="fa-solid fa-wand-magic-sparkles text-blue-600"></i>
             <h3 className="font-bold text-blue-900 text-sm">AI Price Prediction</h3>
