@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AcceptButton from "./AcceptButton";
 
 interface MarketContractDetail {
   id: string;
@@ -11,20 +12,17 @@ interface MarketContractDetail {
 }
 
 async function fetchContract(id: string): Promise<MarketContractDetail | null> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/contracts`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/contracts/${id}`, {
     cache: 'no-store',
   }).catch(() => null as any);
 
   if (!res || !res.ok) return null;
-  const data = (await res.json()) as MarketContractDetail[];
-  return data.find((c) => c.id === id) || null;
+  const data = (await res.json()) as MarketContractDetail;
+  return data;
 }
 
-interface PageProps {
-  params: { id: string };
-}
-
-export default async function MarketContractDetailPage({ params }: PageProps) {
+export default async function MarketContractDetailPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const contract = await fetchContract(params.id);
 
   if (!contract) {
@@ -95,14 +93,7 @@ export default async function MarketContractDetailPage({ params }: PageProps) {
           <p className="text-sm text-gray-600 mb-4">
             Accepting this forward will lock the price and notify the farmer.
           </p>
-          <form action={acceptForward}>
-            <button
-              type="submit"
-              className="w-full bg-green-700 text-white font-bold py-3 rounded-lg shadow-md hover:bg-green-800 transition flex items-center justify-center gap-2"
-            >
-              <i className="fa-solid fa-check-circle"></i> Accept Forward
-            </button>
-          </form>
+          <AcceptButton contractId={contract.id} />
         </div>
       </div>
     </div>

@@ -29,7 +29,7 @@ export default function SplashPage() {
             Continue as Farmer
           </button>
           <button 
-            onClick={() => alert('Buyer Flow coming in Phase 2!')} 
+            onClick={() => router.push('/buyer/home')} 
             className="w-full bg-transparent border border-green-500 text-green-100 font-semibold py-4 rounded-xl hover:bg-green-800 transition"
           >
             Continue as Buyer

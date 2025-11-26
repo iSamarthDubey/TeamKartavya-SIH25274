@@ -27,6 +27,22 @@ export default function ContractDetailPage() {
   if (loading) return <div className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-500">Loading...</div>;
   if (!contract) return <div className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-500">Contract not found</div>;
 
+  async function handleDelete() {
+    if (!confirm("Are you sure you want to cancel this contract?")) return;
+    
+    try {
+      const res = await fetch(`/api/contracts/${contract.id}`, { method: 'DELETE' });
+      if (res.ok) {
+        router.push('/contracts');
+      } else {
+        alert("Failed to delete");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error deleting");
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <div className={`p-3 text-center text-xs font-bold border-b ${contract.status === 'CREATED' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' : 'bg-green-100 text-green-800 border-green-200'}`}>
@@ -89,9 +105,17 @@ export default function ContractDetailPage() {
           </button>
         </div>
 
-        <div className="fixed bottom-0 left-0 w-full bg-white p-4 border-t border-gray-200">
-          <button className="w-full bg-gray-200 text-gray-500 font-bold py-3 rounded-lg cursor-not-allowed">
-            Mark as Settled (Inactive)
+        <div className="fixed bottom-0 left-0 w-full bg-white p-4 border-t border-gray-200 flex gap-3">
+          {contract.status === 'CREATED' && (
+            <button 
+              onClick={handleDelete}
+              className="flex-1 bg-red-100 text-red-600 font-bold py-3 rounded-lg"
+            >
+              Cancel Order
+            </button>
+          )}
+          <button className="flex-1 bg-gray-200 text-gray-500 font-bold py-3 rounded-lg cursor-not-allowed">
+            Mark as Settled
           </button>
         </div>
       </div>

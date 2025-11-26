@@ -55,7 +55,13 @@ export default function ProfilePage() {
       </div>
 
       <div className="p-4 space-y-4">
-        <div className="bg-white p-4 rounded-xl shadow-sm flex items-center gap-4">
+        <div className="bg-white p-4 rounded-xl shadow-sm flex items-center gap-4 relative">
+            <button 
+                onClick={() => router.push('/onboarding/basic')}
+                className="absolute top-4 right-4 text-green-600 text-sm font-bold"
+            >
+                Edit
+            </button>
             <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center text-green-900 font-bold text-2xl">
                 {profile.name.charAt(0)}
             </div>
@@ -63,6 +69,14 @@ export default function ProfilePage() {
                 <h3 className="font-bold text-lg">{profile.name}</h3>
                 <p className="text-gray-500 text-sm">+91 {profile.phone}</p>
                 <p className="text-gray-500 text-xs">{profile.district}</p>
+            </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-gray-100">
+                <h3 className="font-bold text-gray-800 mb-2">Bank Details</h3>
+                <p className="text-sm text-gray-500">No bank account linked</p>
+                <button className="text-green-600 text-xs font-bold mt-2">+ Add Bank Account</button>
             </div>
         </div>
 

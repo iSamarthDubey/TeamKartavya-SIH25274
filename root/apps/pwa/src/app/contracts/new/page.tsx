@@ -1,22 +1,46 @@
 'use client';
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, Suspense } from "react";
 
-export default function CreateContractPage() {
+function CreateContractContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isSandbox = searchParams.get('mode') === 'sandbox';
+  
   const [loading, setLoading] = useState(false);
   const [quantity, setQuantity] = useState(50);
   const [price, setPrice] = useState(4800);
+  const [crop, setCrop] = useState("Soybean");
 
   async function handlePublish() {
     setLoading(true);
+    
+    if (isSandbox) {
+      const newTrade = {
+        id: 'sandbox-' + Date.now(),
+        crop,
+        quantity,
+        price,
+        status: 'CREATED',
+        createdAt: new Date().toISOString()
+      };
+      const trades = JSON.parse(localStorage.getItem('sandbox_trades') || '[]');
+      trades.unshift(newTrade);
+      localStorage.setItem('sandbox_trades', JSON.stringify(trades));
+      
+      setTimeout(() => {
+         router.push('/sandbox');
+      }, 1500);
+      return;
+    }
+
     try {
       const res = await fetch('/api/contracts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          crop: 'Soybean',
+          crop,
           quantity,
           unit: 'Qtl',
           targetPrice: price,
@@ -65,10 +89,16 @@ export default function CreateContractPage() {
       <div className="p-5 space-y-6">
         <div>
           <label className="text-xs font-bold text-gray-500 uppercase">Crop</label>
-          <div className="flex items-center bg-white p-3 rounded-lg border border-gray-200 mt-1">
-            <i className="fa-solid fa-leaf text-green-600 mr-3"></i>
-            <span className="font-bold">Soybean</span>
-          </div>
+          <select 
+            value={crop}
+            onChange={(e) => setCrop(e.target.value)}
+            className="w-full bg-white p-3 rounded-lg border border-gray-200 mt-1 font-bold"
+          >
+            <option value="Soybean">Soybean</option>
+            <option value="Wheat">Wheat</option>
+            <option value="Chana">Chana</option>
+            <option value="Maize">Maize</option>
+          </select>
         </div>
 
         <div>
@@ -121,5 +151,13 @@ export default function CreateContractPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function CreateContractPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CreateContractContent />
+    </Suspense>
   );
 }

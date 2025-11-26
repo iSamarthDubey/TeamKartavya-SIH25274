@@ -7,13 +7,15 @@ export default function SandboxPage() {
   const router = useRouter();
   const [balance, setBalance] = useState(1000000);
   const [level, setLevel] = useState("Lvl 1 Rookie");
+  const [trades, setTrades] = useState<any[]>([]);
 
   useEffect(() => {
     const storedBalance = localStorage.getItem("sandbox_balance");
     if (storedBalance) setBalance(parseInt(storedBalance));
     
-    const trades = JSON.parse(localStorage.getItem("sandbox_trades") || "[]");
-    if (trades.length > 5) setLevel("Lvl 2 Trader");
+    const t = JSON.parse(localStorage.getItem("sandbox_trades") || "[]");
+    setTrades(t);
+    if (t.length > 5) setLevel("Lvl 2 Trader");
   }, []);
 
   return (
@@ -44,12 +46,26 @@ export default function SandboxPage() {
         </div>
 
         <h3 className="font-bold text-gray-700 text-sm">Practice History</h3>
-        <div className="text-center py-8 opacity-50">
-          <i className="fa-solid fa-box-open text-4xl text-gray-300 mb-2"></i>
-          <p className="text-sm text-gray-400">No practice trades yet</p>
-        </div>
+        {trades.length === 0 ? (
+          <div className="text-center py-8 opacity-50">
+            <i className="fa-solid fa-box-open text-4xl text-gray-300 mb-2"></i>
+            <p className="text-sm text-gray-400">No practice trades yet</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {trades.map((t: any) => (
+              <div key={t.id} className="bg-white p-3 rounded-lg shadow-sm border border-purple-100 flex justify-between items-center">
+                <div>
+                  <p className="font-bold text-gray-800">{t.crop}</p>
+                  <p className="text-xs text-gray-500">{t.quantity} Qtl @ ₹{t.price}</p>
+                </div>
+                <span className="bg-purple-100 text-purple-700 text-xs font-bold px-2 py-1 rounded">VIRTUAL</span>
+              </div>
+            ))}
+          </div>
+        )}
 
-        <button onClick={() => router.push('/contracts/new')} className="w-full bg-purple-600 text-white font-bold py-3 rounded-lg shadow-md">
+        <button onClick={() => router.push('/contracts/new?mode=sandbox')} className="w-full bg-purple-600 text-white font-bold py-3 rounded-lg shadow-md">
           Start New Practice Trade
         </button>
       </div>

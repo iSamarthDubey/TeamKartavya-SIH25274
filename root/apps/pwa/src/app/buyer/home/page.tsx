@@ -5,8 +5,15 @@ import { useEffect, useState } from "react";
 
 export default function BuyerHomePage() {
   const [stats, setStats] = useState({ totalQty: 0, fulfilledPct: 0 });
+  const [buyerName, setBuyerName] = useState("Guest Buyer");
 
   useEffect(() => {
+    const stored = localStorage.getItem("kh_profile");
+    if (stored) {
+      const p = JSON.parse(stored);
+      if (p.name) setBuyerName(p.name);
+    }
+
     fetch('/api/contracts')
       .then(res => res.json())
       .then((data: any[]) => {
@@ -20,6 +27,10 @@ export default function BuyerHomePage() {
       .catch(console.error);
   }, []);
 
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
@@ -28,10 +39,10 @@ export default function BuyerHomePage() {
         <div className="flex justify-between items-center mb-4 relative z-10">
           <div>
             <h1 className="text-2xl font-bold">Buyer Portal</h1>
-            <p className="text-green-100 text-sm">Sourcing for AgroCorp Ltd.</p>
+            <p className="text-green-100 text-sm">Sourcing for {buyerName}</p>
           </div>
           <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-green-700 font-bold shadow-md">
-            AC
+            {getInitials(buyerName)}
           </div>
         </div>
         
@@ -90,12 +101,6 @@ export default function BuyerHomePage() {
             In this SIH demo, matched positions are shown in the farmer Contracts tab.
           </p>
         </div>
-      </div>
-    </div>
-  );
-}
-
-        <BottomNav />
       </div>
     </div>
   );
