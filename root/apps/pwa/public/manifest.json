@@ -2,8 +2,11 @@
   "name": "Krishi Hedge",
   "short_name": "KrishiHedge",
   "description": "Smart Price Protection for Farmers",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#166534",
   "icons": [

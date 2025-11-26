@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseServer } from "../../../../lib/supabaseServer";
+import { supabaseServer } from "@/lib/supabaseServer";
 
 // Stub endpoint: in a real backend, compute SHA-256 of the contract, push to IPFS,
 // then anchor the IPFS CID / hash on Polygon testnet via ethers.js.
 // For SIH demo, we return a fixed sample IPFS CID and testnet tx hash and persist them.
 
-export async function POST(_req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function POST(_req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
 
   // Sample data - replace with real values later
   const ipfsCid = "bafybeigdyrztwexamplecid1234567890";
