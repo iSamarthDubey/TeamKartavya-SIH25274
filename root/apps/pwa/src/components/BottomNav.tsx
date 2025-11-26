@@ -55,7 +55,7 @@ export default function BottomNav() {
   }
 
   return (
-    <nav className="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-200 flex justify-around py-3 pb-5 z-50">
+    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-200 flex justify-around py-3 pb-5 z-50">
         <button 
             onClick={() => router.push('/')} 
             className={`${isActive('/') ? 'text-green-700 font-bold' : 'text-gray-400'} flex flex-col items-center text-xs`}
