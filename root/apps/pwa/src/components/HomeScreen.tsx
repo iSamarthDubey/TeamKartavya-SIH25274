@@ -44,8 +44,10 @@ export default function HomeScreen() {
       <header className="bg-green-800 text-white p-5 rounded-b-3xl shadow-lg pb-10">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-green-900 font-bold text-xs">KH</div>
-            <span className="font-bold">Krishi Hedge</span>
+            <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center text-green-900 shadow-sm">
+              <i className="fa-solid fa-wheat-awn text-lg"></i>
+            </div>
+            <span className="font-bold text-lg tracking-tight">Krishi Hedge</span>
           </div>
           <i className="fa-solid fa-bell"></i>
         </div>
@@ -74,7 +76,7 @@ export default function HomeScreen() {
           </div>
           <p className="text-xs text-blue-800 mb-3">Price likely to {forecast?.trend === 'down' ? 'drop' : 'rise'} to <strong>₹{forecast?.predictedPrice?.toLocaleString() || '...'}</strong> in 30 days.</p>
           <div className="w-full h-1 bg-blue-200 rounded-full overflow-hidden">
-            <div className="bg-blue-600 w-3/4 h-full"></div>
+            <div className="bg-blue-600 h-full transition-all duration-1000" style={{ width: `${forecast?.confidence || 85}%` }}></div>
           </div>
           <div className="text-[10px] text-blue-400 mt-1 text-right">{forecast?.confidence || '85'}% Confidence</div>
         </div>
