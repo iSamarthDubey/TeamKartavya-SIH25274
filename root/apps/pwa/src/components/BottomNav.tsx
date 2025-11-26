@@ -12,11 +12,47 @@ export default function BottomNav() {
     return null;
   }
 
+  const isBuyer = pathname.startsWith('/buyer') || pathname.startsWith('/market');
+
   const isActive = (path: string) => {
     if (path === '/' && pathname === '/') return true;
     if (path !== '/' && pathname.startsWith(path)) return true;
     return false;
   };
+
+  if (isBuyer) {
+    return (
+      <nav className="fixed bottom-0 w-full max-w-md bg-slate-900 border-t border-slate-800 flex justify-around py-3 pb-5 z-50 text-slate-400">
+        <button 
+            onClick={() => router.push('/buyer/home')} 
+            className={`${isActive('/buyer/home') ? 'text-blue-400 font-bold' : 'hover:text-slate-200'} flex flex-col items-center text-xs`}
+        >
+            <i className="fa-solid fa-building-columns text-xl mb-1"></i>Dashboard
+        </button>
+        
+        <button 
+            onClick={() => router.push('/market')} 
+            className={`${isActive('/market') ? 'text-blue-400 font-bold' : 'hover:text-slate-200'} flex flex-col items-center text-xs`}
+        >
+            <i className="fa-solid fa-globe text-xl mb-1"></i>Market
+        </button>
+        
+        <button 
+            onClick={() => router.push('/buyer/portfolio')} 
+            className={`${isActive('/buyer/portfolio') ? 'text-blue-400 font-bold' : 'hover:text-slate-200'} flex flex-col items-center text-xs`}
+        >
+            <i className="fa-solid fa-briefcase text-xl mb-1"></i>Portfolio
+        </button>
+        
+        <button 
+            onClick={() => router.push('/profile')} 
+            className={`${isActive('/profile') ? 'text-blue-400 font-bold' : 'hover:text-slate-200'} flex flex-col items-center text-xs`}
+        >
+            <i className="fa-solid fa-user-tie text-xl mb-1"></i>Profile
+        </button>
+      </nav>
+    );
+  }
 
   return (
     <nav className="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-200 flex justify-around py-3 pb-5 z-50">

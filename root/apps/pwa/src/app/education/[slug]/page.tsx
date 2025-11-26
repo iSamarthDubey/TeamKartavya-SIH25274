@@ -89,76 +89,111 @@ export default function LessonPage({ params }: PageProps) {
 
   function handleSubmit() {
     setSubmitted(true);
+    const calculatedScore = lesson.questions.reduce((acc, q, idx) => (answers[idx] === q.correct ? acc + 1 : acc), 0);
+    
+    if (calculatedScore === lesson.questions.length) {
+      const current = parseInt(localStorage.getItem("kh_edu_progress") || "0");
+      if (current < 100) {
+        localStorage.setItem("kh_edu_progress", Math.min(100, current + 34).toString());
+      }
+    }
   }
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-[420px] bg-white px-4 pb-20 pt-4 text-sm">
-      <header className="mb-3 flex items-center gap-2">
-        <button
-          onClick={() => router.back()}
-          className="rounded-full border border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-700"
-        >
-          Back
-        </button>
-        <div>
-          <h1 className="text-lg font-semibold text-zinc-900">{lesson.title}</h1>
-          <p className="text-[11px] text-zinc-600">Short lesson with 3 quick questions.</p>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="bg-white p-4 shadow-sm mb-4 flex items-center gap-3">
+        <button onClick={() => router.back()} className="text-gray-600"><i className="fa-solid fa-arrow-left"></i></button>
+        <h1 className="text-xl font-bold text-green-800">Lesson</h1>
+      </div>
 
-      <section className="space-y-3 text-xs text-zinc-700">
-        {lesson.body.map((p, idx) => (
-          <p key={idx}>{p}</p>
-        ))}
-      </section>
-
-      <section className="mt-4 space-y-3 text-xs">
-        {lesson.questions.map((q, qIndex) => (
-          <div key={qIndex} className="rounded-2xl border border-zinc-100 bg-white p-3 shadow-sm">
-            <p className="text-[11px] font-medium text-zinc-700">Q{qIndex + 1}. {q.q}</p>
-            <div className="mt-2 space-y-1">
-              {q.options.map((opt, optIndex) => {
-                const selected = answers[qIndex] === optIndex;
-                const correct = submitted && q.correct === optIndex;
-                const wrong = submitted && selected && !correct;
-                return (
-                  <button
-                    key={optIndex}
-                    type="button"
-                    onClick={() => selectAnswer(qIndex, optIndex)}
-                    className={`flex w-full items-center justify-between rounded-full border px-3 py-1 text-[11px] ${
-                      correct
-                        ? 'border-emerald-500 bg-emerald-50 text-emerald-900'
-                        : wrong
-                        ? 'border-red-400 bg-red-50 text-red-800'
-                        : selected
-                        ? 'border-emerald-500 bg-emerald-50 text-emerald-900'
-                        : 'border-zinc-200 bg-white text-zinc-800'
-                    }`}
-                  >
-                    <span>{opt}</span>
-                  </button>
-                );
-              })}
-            </div>
+      <div className="p-4 space-y-6">
+        <div className="bg-white p-5 rounded-xl shadow-sm border-l-4 border-yellow-500">
+          <h2 className="text-xl font-bold text-gray-800 mb-3">{lesson.title}</h2>
+          <div className="space-y-2 text-gray-600 text-sm leading-relaxed">
+            {lesson.body.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
           </div>
-        ))}
-      </section>
+        </div>
 
-      <section className="mt-4 space-y-2 text-xs">
-        <button
-          onClick={handleSubmit}
-          className="w-full rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm"
-        >
-          Check answers
-        </button>
-        {submitted && (
-          <p className="text-center text-[11px] text-emerald-800">
-            You got {score} / {lesson.questions.length} correct.
-          </p>
+        <div className="space-y-6">
+          <h3 className="font-bold text-gray-800 text-lg">Quiz</h3>
+          {lesson.questions.map((q, qIdx) => {
+            const isCorrect = answers[qIdx] === q.correct;
+            const isWrong = submitted && answers[qIdx] !== -1 && !isCorrect;
+            
+            return (
+              <div key={qIdx} className="bg-white p-5 rounded-xl shadow-sm">
+                <p className="font-bold text-gray-800 mb-3">{qIdx + 1}. {q.q}</p>
+                <div className="space-y-2">
+                  {q.options.map((opt, oIdx) => {
+                    const isSelected = answers[qIdx] === oIdx;
+                    let borderClass = "border-gray-200";
+                    let bgClass = "bg-white";
+                    let textClass = "text-gray-600";
+
+                    if (submitted) {
+                      if (oIdx === q.correct) {
+                        borderClass = "border-green-500";
+                        bgClass = "bg-green-50";
+                        textClass = "text-green-800 font-bold";
+                      } else if (isSelected && !isCorrect) {
+                        borderClass = "border-red-500";
+                        bgClass = "bg-red-50";
+                        textClass = "text-red-800";
+                      }
+                    } else if (isSelected) {
+                      borderClass = "border-yellow-500";
+                      bgClass = "bg-yellow-50";
+                      textClass = "text-yellow-900 font-bold";
+                    }
+
+                    return (
+                      <button
+                        key={oIdx}
+                        onClick={() => !submitted && selectAnswer(qIdx, oIdx)}
+                        className={`w-full text-left p-3 rounded-lg border-2 ${borderClass} ${bgClass} ${textClass} transition-all`}
+                        disabled={submitted}
+                      >
+                        {opt}
+                        {submitted && oIdx === q.correct && <i className="fa-solid fa-check float-right text-green-600"></i>}
+                        {submitted && isSelected && !isCorrect && <i className="fa-solid fa-times float-right text-red-600"></i>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {!submitted ? (
+          <button
+            onClick={handleSubmit}
+            disabled={answers.includes(-1)}
+            className={`w-full py-3 rounded-lg font-bold shadow-md transition ${
+              answers.includes(-1) 
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+                : "bg-green-700 text-white hover:bg-green-800"
+            }`}
+          >
+            Submit Answers
+          </button>
+        ) : (
+          <div className="bg-green-100 p-4 rounded-xl text-center border border-green-200">
+            <p className="text-green-800 font-bold text-lg">
+              You scored {score} / {lesson.questions.length}
+            </p>
+            <button 
+              onClick={() => router.back()}
+              className="mt-3 text-green-700 font-bold underline"
+            >
+              Back to Lessons
+            </button>
+          </div>
         )}
-      </section>
-    </main>
+      </div>
+    </div>
   );
 }
 

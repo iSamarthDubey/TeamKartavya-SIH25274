@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Sans } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
+import InstallPrompt from "@/components/InstallPrompt";
 
 const notoSans = Noto_Sans({
   subsets: ["latin"],
@@ -12,6 +13,9 @@ const notoSans = Noto_Sans({
 export const metadata: Metadata = {
   title: "Krishi Hedge - SIH 2025 Prototype",
   description: "Smart Price Protection for Farmers",
+  manifest: "/manifest.json",
+  themeColor: "#166534",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0",
 };
 
 export default function RootLayout({
@@ -31,6 +35,7 @@ export default function RootLayout({
         <div className="flex justify-center min-h-screen">
           <div className="w-full max-w-md bg-gray-50 min-h-screen shadow-2xl relative overflow-hidden flex flex-col">
             {children}
+            <InstallPrompt />
             <BottomNav />
           </div>
         </div>
