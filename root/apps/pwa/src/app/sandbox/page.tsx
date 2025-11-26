@@ -1,9 +1,20 @@
 'use client';
 
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export default function SandboxPage() {
   const router = useRouter();
+  const [balance, setBalance] = useState(1000000);
+  const [level, setLevel] = useState("Lvl 1 Rookie");
+
+  useEffect(() => {
+    const storedBalance = localStorage.getItem("sandbox_balance");
+    if (storedBalance) setBalance(parseInt(storedBalance));
+    
+    const trades = JSON.parse(localStorage.getItem("sandbox_trades") || "[]");
+    if (trades.length > 5) setLevel("Lvl 2 Trader");
+  }, []);
 
   return (
     <div className="min-h-screen bg-purple-50 pb-20">
@@ -15,10 +26,10 @@ export default function SandboxPage() {
         <div className="flex justify-between items-end">
           <div>
             <p className="text-purple-200 text-xs">Virtual Balance</p>
-            <h2 className="text-3xl font-bold">₹10,00,000</h2>
+            <h2 className="text-3xl font-bold">₹{balance.toLocaleString('en-IN')}</h2>
           </div>
           <div className="text-right">
-            <span className="bg-purple-600 px-2 py-1 rounded text-xs font-bold">Lvl 1 Rookie</span>
+            <span className="bg-purple-600 px-2 py-1 rounded text-xs font-bold">{level}</span>
           </div>
         </div>
       </header>
