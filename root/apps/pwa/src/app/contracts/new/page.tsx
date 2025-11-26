@@ -11,6 +11,12 @@ interface NewContractForm {
   deliveryWindow: string;
 }
 
+const DELIVERY_OPTIONS = [
+  { label: "30 days", value: "Next 1 month" },
+  { label: "60 days", value: "Next 2 months" },
+  { label: "90 days", value: "Next 3 months" },
+];
+
 export default function NewContractPage() {
   const router = useRouter();
   const [form, setForm] = useState<NewContractForm>({
@@ -48,7 +54,12 @@ export default function NewContractPage() {
       return;
     }
 
-    router.push("/contracts");
+    const created = (await res.json()) as { id?: string };
+    if (created?.id) {
+      router.push(`/contracts/${created.id}`);
+    } else {
+      router.push("/contracts");
+    }
   }
 
   return (
@@ -103,16 +114,23 @@ export default function NewContractPage() {
           min={0}
         />
 
-        <label className="mt-3 block text-xs font-medium text-zinc-700">Delivery window</label>
-        <select
-          className="w-full rounded-xl border border-zinc-200 bg-white p-2 text-sm"
-          value={form.deliveryWindow}
-          onChange={(e) => updateField("deliveryWindow", e.target.value)}
-        >
-          <option value="Next 1 month">Next 1 month</option>
-          <option value="Next 2 months">Next 2 months</option>
-          <option value="Next 3 months">Next 3 months</option>
-        </select>
+        <label className="mt-3 block text-xs font-medium text-zinc-700">Duration &amp; delivery window</label>
+        <div className="mt-1 flex gap-2 text-xs">
+          {DELIVERY_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => updateField("deliveryWindow", opt.value)}
+              className={`flex-1 rounded-full border px-3 py-1 ${
+                form.deliveryWindow === opt.value
+                  ? "border-emerald-500 bg-emerald-50 text-emerald-800"
+                  : "border-zinc-200 bg-white text-zinc-700"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
 
         {/* Preview & confirm */}
         <div className="mt-4 rounded-2xl bg-emerald-50 p-3 text-sm text-emerald-900">

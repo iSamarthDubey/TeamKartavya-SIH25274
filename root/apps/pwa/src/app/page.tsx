@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { getForecastSummary } from "../lib/forecast";
+import { StartupGate } from "./StartupGate";
+import { HomeTutorialOverlay } from "./HomeTutorialOverlay";
+import { BottomNav } from "./BottomNav";
 
 export default async function Home() {
   const summary = await getForecastSummary();
@@ -13,6 +16,8 @@ export default async function Home() {
 
   return (
     <div className="flex min-h-screen justify-center bg-zinc-50">
+      <StartupGate />
+      <HomeTutorialOverlay />
       <main className="flex min-h-screen w-full max-w-[420px] flex-col justify-between bg-white px-4 pb-16 pt-4">
         {/* Top App Bar */}
         <header className="mb-3 flex items-center justify-between">
@@ -44,7 +49,10 @@ export default async function Home() {
           </div>
 
           {/* Forecast card */}
-          <div className="rounded-2xl border border-zinc-100 bg-white px-4 py-3 shadow-sm">
+          <Link
+            href="/forecast"
+            className="block rounded-2xl border border-zinc-100 bg-white px-4 py-3 shadow-sm"
+          >
             <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
               Price outlook (next 90 days)
             </p>
@@ -66,7 +74,7 @@ export default async function Home() {
                 </div>
               ))}
             </div>
-          </div>
+          </Link>
 
           {/* Recommended action */}
           <div className="rounded-2xl bg-orange-50 px-4 py-3 text-sm text-orange-900">
@@ -115,23 +123,21 @@ export default async function Home() {
               <p className="mt-0.5 text-[11px] text-zinc-600">Short lessons in simple Hindi & English</p>
             </Link>
           </div>
+
+          <div className="mt-2">
+            <Link
+              href="/profile"
+              className="block rounded-2xl border border-zinc-100 bg-white px-3 py-3 text-left text-xs shadow-sm"
+            >
+              <p className="text-[11px] font-medium text-zinc-500">Profile &amp; settings</p>
+              <p className="mt-1 text-sm font-semibold text-zinc-900">View details &amp; reset app</p>
+              <p className="mt-0.5 text-[11px] text-zinc-600">See your crops, village and mode; clear data on this device.</p>
+            </Link>
+          </div>
         </section>
 
         {/* Bottom nav bar */}
-        <nav className="fixed inset-x-0 bottom-0 mx-auto flex max-w-[420px] items-center justify-between border-t border-zinc-200 bg-white px-6 py-2 text-[11px] text-zinc-600">
-          <Link href="/" className="flex flex-1 flex-col items-center justify-center gap-0.5">
-            <span className="text-xs font-semibold text-emerald-700">Home</span>
-          </Link>
-          <Link href="/contracts" className="flex flex-1 flex-col items-center justify-center gap-0.5">
-            <span>Contracts</span>
-          </Link>
-          <Link href="/sandbox" className="flex flex-1 flex-col items-center justify-center gap-0.5">
-            <span>Sandbox</span>
-          </Link>
-          <Link href="/education" className="flex flex-1 flex-col items-center justify-center gap-0.5">
-            <span>Learn</span>
-          </Link>
-        </nav>
+        <BottomNav />
       </main>
     </div>
   );
