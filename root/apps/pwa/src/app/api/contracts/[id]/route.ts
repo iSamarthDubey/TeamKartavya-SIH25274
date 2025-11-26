@@ -5,12 +5,12 @@ export async function GET(
   _req: Request,
   context: { params: Promise<{ id: string }> },
 ) {
-  const { params } = await context;
+  const { id } = await context.params;
   const supabase = supabaseServer();
   const { data, error } = await supabase
     .from("contracts")
     .select("*")
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (error) {
