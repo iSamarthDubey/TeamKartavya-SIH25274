@@ -1,5 +1,6 @@
 packages:
   - "apps/pwa"
   - "apps/admin-web"
+  - "apps/web"
   - "services/*"
   - "packages/*"
