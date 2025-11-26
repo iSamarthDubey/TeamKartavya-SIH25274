@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseServer } from "../../../../../lib/supabaseServer";
+import { supabaseServer } from "../../../../lib/supabaseServer";
 
 // Stub endpoint: in a real backend, generate a PDF from the contract data and return its URL.
 // For now we just return a static sample PDF under /public and persist pdf_url.
