@@ -1,11 +1,26 @@
+'use client';
+
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export default function EducationPage() {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const p = localStorage.getItem("kh_edu_progress");
+    if (p) setProgress(parseInt(p));
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <div className="bg-white p-4 shadow-sm mb-4">
         <h1 className="text-xl font-bold text-green-800">Education Center</h1>
         <p className="text-xs text-gray-500">Short lessons in simple Hindi & English</p>
+        
+        <div className="mt-3 bg-gray-100 rounded-full h-2 w-full overflow-hidden">
+          <div className="bg-green-500 h-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
+        </div>
+        <p className="text-[10px] text-right text-gray-400 mt-1">{progress}% Completed</p>
       </div>
 
       <div className="p-4 space-y-4">

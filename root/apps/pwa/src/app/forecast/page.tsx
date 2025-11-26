@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 export default function ForecastPage() {
   const router = useRouter();
   const [forecast, setForecast] = useState<any>(null);
+  const [horizon, setHorizon] = useState(30);
 
   useEffect(() => {
     fetch('/api/forecast')
@@ -13,6 +14,8 @@ export default function ForecastPage() {
       .then(data => setForecast(data))
       .catch(console.error);
   }, []);
+
+  const currentHorizon = forecast?.horizons?.find((h: any) => h.days === horizon);
 
   return (
     <div className="min-h-screen bg-white pb-20">
@@ -27,27 +30,54 @@ export default function ForecastPage() {
                <i className="fa-solid fa-filter text-gray-400"></i>
                <span className="font-bold text-sm">{forecast?.crop || 'Soybean'}</span>
           </div>
-          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">30 Days</span>
+          <div className="flex bg-white rounded-lg p-1 shadow-sm">
+            {[7, 30, 90].map(d => (
+              <button 
+                key={d}
+                onClick={() => setHorizon(d)}
+                className={`px-3 py-1 text-xs rounded ${horizon === d ? 'bg-blue-100 text-blue-700 font-bold' : 'text-gray-500'}`}
+              >
+                {d}D
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-2 h-64 relative mb-4 flex items-center justify-center">
              <div className="w-full h-full p-4 relative">
-                <div className="absolute bottom-10 left-0 w-full h-px bg-gray-300"></div> <div className="absolute top-0 left-10 w-px h-full bg-gray-300"></div> <svg className="w-full h-full overflow-visible">
-                    <path d="M40,150 Q100,100 180,180 T300,200" fill="none" stroke="#EF4444" strokeWidth="3" />
-                    <circle cx="40" cy="150" r="4" fill="#15803D" /> <circle cx="300" cy="200" r="4" fill="#EF4444" /> </svg>
+                <div className="absolute bottom-10 left-0 w-full h-px bg-gray-300"></div> <div className="absolute top-0 left-10 w-px h-full bg-gray-300"></div> 
+                
+                {/* Dynamic Chart Line */}
+                <svg className="w-full h-full overflow-visible">
+                    {/* Simple visualization: Start at current price (left), End at predicted (right) */}
+                    <path 
+                      d={`M40,150 Q150,${currentHorizon?.yhat > (forecast?.current_price || 4250) ? 100 : 200} 300,${currentHorizon?.yhat > (forecast?.current_price || 4250) ? 120 : 180}`} 
+                      fill="none" 
+                      stroke={currentHorizon?.yhat > (forecast?.current_price || 4250) ? "#15803D" : "#EF4444"} 
+                      strokeWidth="3" 
+                    />
+                    <circle cx="40" cy="150" r="4" fill="#6B7280" /> 
+                    <circle cx="300" cy={currentHorizon?.yhat > (forecast?.current_price || 4250) ? "120" : "180"} r="4" fill={currentHorizon?.yhat > (forecast?.current_price || 4250) ? "#15803D" : "#EF4444"} /> 
+                </svg>
+
                 <div className="absolute top-10 right-0 bg-white shadow p-2 rounded text-xs border border-gray-100">
-                    <span className="block text-gray-400">Predicted (Dec 15)</span>
-                    <span className="block font-bold text-red-600">₹{forecast?.predictedPrice || '4,600'} ▼</span>
+                    <span className="block text-gray-400">Predicted ({horizon} Days)</span>
+                    <span className={`block font-bold ${currentHorizon?.yhat > (forecast?.current_price || 4250) ? 'text-green-600' : 'text-red-600'}`}>
+                      ₹{currentHorizon?.yhat || '...'} {currentHorizon?.yhat > (forecast?.current_price || 4250) ? '▲' : '▼'}
+                    </span>
+                </div>
+                <div className="absolute bottom-10 left-10 bg-white shadow p-1 rounded text-[10px] border border-gray-100">
+                    Current: ₹{forecast?.current_price}
                 </div>
              </div>
         </div>
 
         <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
-          <h4 className="font-bold text-blue-900 text-sm mb-1">AI Insight</h4>
+          <h4 className="font-bold text-blue-900 text-sm mb-1">AI Insight ({horizon} Days)</h4>
           <p className="text-xs text-blue-800 leading-relaxed">
-            {forecast?.insight || 'Based on historical data and current monsoon patterns, prices are expected to fall by 8-10% in the next 3 weeks.'}
+            {currentHorizon?.summary || 'Loading forecast...'}
             <br/><br/>
-            <strong>Recommendation:</strong> Create a forward contract now to lock in current rates.
+            <strong>Range:</strong> ₹{currentHorizon?.lower} - ₹{currentHorizon?.upper}
           </p>
         </div>
 

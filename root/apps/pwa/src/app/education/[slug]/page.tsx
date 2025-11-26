@@ -89,6 +89,14 @@ export default function LessonPage({ params }: PageProps) {
 
   function handleSubmit() {
     setSubmitted(true);
+    const calculatedScore = lesson.questions.reduce((acc, q, idx) => (answers[idx] === q.correct ? acc + 1 : acc), 0);
+    
+    if (calculatedScore === lesson.questions.length) {
+      const current = parseInt(localStorage.getItem("kh_edu_progress") || "0");
+      if (current < 100) {
+        localStorage.setItem("kh_edu_progress", Math.min(100, current + 34).toString());
+      }
+    }
   }
 
   return (

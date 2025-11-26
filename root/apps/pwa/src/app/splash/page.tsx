@@ -29,7 +29,7 @@ export default function SplashPage() {
             Continue as Farmer
           </button>
           <button 
-            onClick={() => router.push('/buyer/home')} 
+            onClick={() => router.push('/auth/buyer-login')} 
             className="w-full bg-transparent border border-green-500 text-green-100 font-semibold py-4 rounded-xl hover:bg-green-800 transition"
           >
             Continue as Buyer
