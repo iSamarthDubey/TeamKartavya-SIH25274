@@ -15,7 +15,7 @@ interface LocalProfile {
 
 export default function OtpPage() {
   const router = useRouter();
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState("4205");
   const [phone, setPhone] = useState("");
 
   useEffect(() => {
@@ -28,8 +28,8 @@ export default function OtpPage() {
     if (typeof window === "undefined") return;
 
     const role = (window.localStorage.getItem(ROLE_STORAGE_KEY) || "farmer") as "farmer" | "buyer";
-    if (code.length !== 6) {
-      alert("Please enter the 6-digit OTP.");
+    if (code.length !== 4) {
+      alert("Please enter the 4-digit OTP.");
       return;
     }
 
@@ -55,10 +55,19 @@ export default function OtpPage() {
       </div>
 
       <div className="flex justify-center gap-3 mb-8">
-        <input type="text" value="4" className="w-12 h-14 border-2 border-gray-200 rounded-lg text-center text-2xl font-bold focus:border-yellow-500 outline-none" readOnly />
-        <input type="text" value="2" className="w-12 h-14 border-2 border-gray-200 rounded-lg text-center text-2xl font-bold focus:border-yellow-500 outline-none" readOnly />
-        <input type="text" value="0" className="w-12 h-14 border-2 border-gray-200 rounded-lg text-center text-2xl font-bold focus:border-yellow-500 outline-none" readOnly />
-        <input type="text" value="5" className="w-12 h-14 border-2 border-gray-200 rounded-lg text-center text-2xl font-bold focus:border-yellow-500 outline-none" readOnly />
+        {['4', '2', '0', '5'].map((digit, idx) => (
+          <input 
+            key={idx}
+            type="text" 
+            defaultValue={digit} 
+            className="w-12 h-14 border-2 border-gray-200 rounded-lg text-center text-2xl font-bold focus:border-yellow-500 outline-none" 
+            onChange={(e) => {
+              const newCode = code.split('');
+              newCode[idx] = e.target.value;
+              setCode(newCode.join(''));
+            }}
+          />
+        ))}
       </div>
 
       <button onClick={handleVerify} className="w-full bg-green-700 text-white font-bold py-3 rounded-lg shadow-md hover:bg-green-800 transition">
