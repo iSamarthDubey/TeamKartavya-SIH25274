@@ -1,32 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "../../../lib/supabaseServer";
 
-export async function GET() {
-  const supabase = supabaseServer();
-  const { data, error } = await supabase
-    .from("contracts")
-    .select("*")
-    .order("created_at", { ascending: false });
+export async function GET(req: NextRequest) {
+  try {
+    const searchParams = req.nextUrl.searchParams;
+    const role = searchParams.get('role'); // 'farmer' or 'buyer'
+    const userId = searchParams.get('userId');
 
-  if (error) {
+    const supabase = supabaseServer();
+    let query = supabase
+      .from("contracts")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    // Filter by role
+    if (role === 'farmer' && userId) {
+      query = query.eq('farmer_id', userId);
+    } else if (role === 'buyer') {
+      // Buyers see all available contracts OR contracts they've accepted
+      query = query.or(`status.eq.CREATED,buyer_id.eq.${userId}`);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    const mapped = (data || []).map((row: any) => ({
+      id: row.id,
+      crop: row.crop,
+      quantity: row.quantity,
+      unit: row.unit,
+      strikePrice: row.strike_price,
+      deliveryWindow: row.delivery_window,
+      status: row.status,
+      createdAt: row.created_at,
+      farmerId: row.farmer_id,
+      buyerId: row.buyer_id,
+      pdfUrl: row.pdf_url,
+      anchorTxHash: row.anchor_tx_hash,
+      anchorExplorerUrl: row.anchor_explorer_url,
+    }));
+
+    return NextResponse.json(mapped, { status: 200 });
+  } catch (error: any) {
+    console.error("[CONTRACTS] GET error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-
-  const mapped = (data || []).map((row: any) => ({
-    id: row.id,
-    crop: row.crop,
-    quantity: row.quantity,
-    unit: row.unit,
-    strikePrice: row.strike_price,
-    deliveryWindow: row.delivery_window,
-    status: row.status,
-    createdAt: row.created_at,
-    pdfUrl: row.pdf_url,
-    anchorTxHash: row.anchor_tx_hash,
-    anchorExplorerUrl: row.anchor_explorer_url,
-  }));
-
-  return NextResponse.json(mapped, { status: 200 });
 }
 
 export async function POST(req: NextRequest) {
