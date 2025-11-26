@@ -11,17 +11,46 @@ export default function LoginPage() {
     if (typeof window === "undefined") return "";
     return window.localStorage.getItem(PHONE_STORAGE_KEY) || "";
   });
+  const [loading, setLoading] = useState(false);
 
-  function handleNext() {
+  async function handleNext() {
     if (!phone || phone.length < 10) {
       alert("Please enter a valid 10-digit mobile number.");
       return;
     }
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(PHONE_STORAGE_KEY, phone);
+    
+    setLoading(true);
+    try {
+      const response = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "Failed to send OTP");
+        return;
+      }
+
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(PHONE_STORAGE_KEY, phone);
+        // In dev mode, show OTP in console for easy testing
+        if (data.otp) {
+          console.log("🔐 OTP:", data.otp);
+          alert(`OTP sent! (Dev mode: ${data.otp})`);
+        } else {
+          alert("OTP sent to your mobile number!");
+        }
+      }
+      router.push("/auth/otp");
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
-    // In a real app we would call /api/auth/send-otp here.
-    router.push("/auth/otp");
   }
 
   return (
@@ -46,8 +75,12 @@ export default function LoginPage() {
             />
           </div>
         </div>
-        <button onClick={handleNext} className="w-full bg-green-700 text-white font-bold py-3 rounded-lg mt-6 shadow-md hover:bg-green-800 transition">
-          Send OTP
+        <button 
+          onClick={handleNext} 
+          disabled={loading}
+          className="w-full bg-green-700 text-white font-bold py-3 rounded-lg mt-6 shadow-md hover:bg-green-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? "Sending..." : "Send OTP"}
         </button>
       </div>
     </div>

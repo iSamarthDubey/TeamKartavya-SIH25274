@@ -15,8 +15,9 @@ interface LocalProfile {
 
 export default function OtpPage() {
   const router = useRouter();
-  const [code, setCode] = useState("4205");
+  const [code, setCode] = useState("");
   const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -24,26 +25,48 @@ export default function OtpPage() {
     setPhone(stored);
   }, []);
 
-  function handleVerify() {
+  async function handleVerify() {
     if (typeof window === "undefined") return;
 
-    const role = (window.localStorage.getItem(ROLE_STORAGE_KEY) || "farmer") as "farmer" | "buyer";
-    if (code.length !== 4) {
-      alert("Please enter the 4-digit OTP.");
+    if (code.length !== 6) {
+      alert("Please enter the 6-digit OTP.");
       return;
     }
 
-    const existingRaw = window.localStorage.getItem(PROFILE_STORAGE_KEY);
-    let profile: LocalProfile = existingRaw ? JSON.parse(existingRaw) : { phone };
-    if (!profile.phone) profile.phone = phone;
-    profile.role = role;
-    window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
+    setLoading(true);
+    try {
+      const response = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, otp: code }),
+      });
 
-    // Route based on role.
-    if (role === "buyer") {
-      router.push("/onboarding/buyer/business");
-    } else {
-      router.push("/onboarding/basic");
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "Invalid OTP");
+        return;
+      }
+
+      // Store user session
+      const profile: LocalProfile = {
+        phone: data.user.phone,
+        role: data.user.role,
+        onboardingCompleted: data.user.onboarded
+      };
+      window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
+
+      // Route based on onboarding status
+      if (data.user.onboarded) {
+        router.push(data.user.role === "buyer" ? "/buyer/home" : "/");
+      } else {
+        router.push(data.user.role === "buyer" ? "/onboarding/buyer/business" : "/onboarding/basic");
+      }
+    } catch (error) {
+      console.error("Verification error:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -54,24 +77,40 @@ export default function OtpPage() {
         <p className="text-gray-500 text-sm">Sent to +91 {phone || "98765 43210"}</p>
       </div>
 
-      <div className="flex justify-center gap-3 mb-8">
-        {['4', '2', '0', '5'].map((digit, idx) => (
+      <div className="flex justify-center gap-2 mb-8">
+        {[0, 1, 2, 3, 4, 5].map((idx) => (
           <input 
             key={idx}
             type="text" 
-            defaultValue={digit} 
+            maxLength={1}
+            value={code[idx] || ''}
             className="w-12 h-14 border-2 border-gray-200 rounded-lg text-center text-2xl font-bold focus:border-yellow-500 outline-none" 
             onChange={(e) => {
               const newCode = code.split('');
               newCode[idx] = e.target.value;
               setCode(newCode.join(''));
+              // Auto-focus next input
+              if (e.target.value && idx < 5) {
+                const nextInput = e.target.parentElement?.children[idx + 1] as HTMLInputElement;
+                nextInput?.focus();
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Backspace' && !code[idx] && idx > 0) {
+                const prevInput = e.target.parentElement?.children[idx - 1] as HTMLInputElement;
+                prevInput?.focus();
+              }
             }}
           />
         ))}
       </div>
 
-      <button onClick={handleVerify} className="w-full bg-green-700 text-white font-bold py-3 rounded-lg shadow-md hover:bg-green-800 transition">
-        Verify & Login
+      <button 
+        onClick={handleVerify} 
+        disabled={loading || code.length !== 6}
+        className="w-full bg-green-700 text-white font-bold py-3 rounded-lg shadow-md hover:bg-green-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {loading ? "Verifying..." : "Verify & Login"}
       </button>
       <p className="text-center text-xs text-gray-400 mt-4">Resend OTP in 20s</p>
     </div>
