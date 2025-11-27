@@ -12,3 +12,5 @@ root/docs/BUG_FIXES.md
 root/docs/DATABASE_SCHEMA.md
 root/docs/DEPLOYMENT_GUIDE.md
 root/services/ml/README.md
+root/.md
+root/docs/OTP_SMS_INTEGRATION.md
