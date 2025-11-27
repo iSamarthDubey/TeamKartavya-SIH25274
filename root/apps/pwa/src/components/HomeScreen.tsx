@@ -65,11 +65,16 @@ export default function HomeScreen() {
       .then(data => setForecast(data))
       .catch(console.error);
 
-    // Fetch Recent Contracts
-    fetch('/api/contracts')
-      .then(res => res.json())
-      .then(data => setContracts(data.slice(0, 2))) // Show top 2
-      .catch(console.error);
+    // Fetch Recent Contracts for this farmer
+    if (typeof window !== 'undefined') {
+      const userId = window.localStorage.getItem("kh_user_id");
+      if (userId) {
+        fetch(`/api/contracts?role=farmer&userId=${userId}`)
+          .then(res => res.json())
+          .then(data => setContracts(data.slice(0, 2))) // Show top 2
+          .catch(console.error);
+      }
+    }
   }, []);
 
   return (
