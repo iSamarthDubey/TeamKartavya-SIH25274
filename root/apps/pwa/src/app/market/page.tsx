@@ -11,7 +11,7 @@ interface MarketContract {
 }
 
 async function fetchContracts(): Promise<MarketContract[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/contracts`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/contracts?role=buyer`, {
     // Avoid caching so new forwards show up.
     cache: 'no-store',
   }).catch(() => null as any);
