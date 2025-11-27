@@ -92,13 +92,13 @@ export default function OtpPage() {
               setCode(newCode.join(''));
               // Auto-focus next input
               if (e.target.value && idx < 5) {
-                const nextInput = e.target.parentElement?.children[idx + 1] as HTMLInputElement;
+                const nextInput = (e.target as HTMLInputElement).parentElement?.children[idx + 1] as HTMLInputElement;
                 nextInput?.focus();
               }
             }}
             onKeyDown={(e) => {
               if (e.key === 'Backspace' && !code[idx] && idx > 0) {
-                const prevInput = e.target.parentElement?.children[idx - 1] as HTMLInputElement;
+                const prevInput = (e.target as HTMLInputElement).parentElement?.children[idx - 1] as HTMLInputElement;
                 prevInput?.focus();
               }
             }}
