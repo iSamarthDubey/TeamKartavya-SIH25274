@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { NotificationBell } from "./NotificationBell";
+import NotificationPrompt from "./NotificationPrompt";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -15,12 +17,44 @@ export default function HomeScreen() {
       if (!phone) {
         router.replace('/splash');
       }
-      const profile = window.localStorage.getItem("kh_profile");
-      if (profile) {
-        try {
-          const p = JSON.parse(profile);
-          if (p.name) setName(p.name);
-        } catch (e) {}
+      
+      // Try to load profile from database first
+      const userId = window.localStorage.getItem("kh_user_id");
+      if (userId) {
+        fetch(`/api/profile?userId=${userId}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.name) {
+              setName(data.name);
+              // Update localStorage with fresh data
+              const existingProfile = window.localStorage.getItem("kh_profile");
+              if (existingProfile) {
+                const parsed = JSON.parse(existingProfile);
+                const updated = { ...parsed, name: data.name, location: data.location, crops: data.crops };
+                window.localStorage.setItem("kh_profile", JSON.stringify(updated));
+              }
+            }
+          })
+          .catch(err => {
+            console.error('Failed to load profile from DB:', err);
+            // Fallback to localStorage
+            const profile = window.localStorage.getItem("kh_profile");
+            if (profile) {
+              try {
+                const p = JSON.parse(profile);
+                if (p.name) setName(p.name);
+              } catch (e) {}
+            }
+          });
+      } else {
+        // No userId, fallback to localStorage
+        const profile = window.localStorage.getItem("kh_profile");
+        if (profile) {
+          try {
+            const p = JSON.parse(profile);
+            if (p.name) setName(p.name);
+          } catch (e) {}
+        }
       }
     }
   }, [router]);
@@ -32,15 +66,22 @@ export default function HomeScreen() {
       .then(data => setForecast(data))
       .catch(console.error);
 
-    // Fetch Recent Contracts
-    fetch('/api/contracts')
-      .then(res => res.json())
-      .then(data => setContracts(data.slice(0, 2))) // Show top 2
-      .catch(console.error);
+    // Fetch Recent Contracts for this farmer
+    if (typeof window !== 'undefined') {
+      const userId = window.localStorage.getItem("kh_user_id");
+      if (userId) {
+        fetch(`/api/contracts?role=farmer&userId=${userId}`)
+          .then(res => res.json())
+          .then(data => setContracts(data.slice(0, 2))) // Show top 2
+          .catch(console.error);
+      }
+    }
   }, []);
 
   return (
     <div className="min-h-screen pb-20 relative bg-gray-50">
+      <NotificationPrompt />
+      
       <header className="bg-green-800 text-white p-5 rounded-b-3xl shadow-lg pb-10">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
@@ -49,7 +90,7 @@ export default function HomeScreen() {
             </div>
             <span className="font-bold text-lg tracking-tight">Krishi Hedge</span>
           </div>
-          <i className="fa-solid fa-bell"></i>
+          <NotificationBell />
         </div>
         <h1 className="text-2xl font-bold">Namaste, {name}</h1>
         <p className="text-green-200 text-sm">Market is {forecast?.trend || 'volatile'} today.</p>

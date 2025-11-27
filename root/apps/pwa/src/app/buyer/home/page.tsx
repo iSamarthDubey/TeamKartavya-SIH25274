@@ -20,7 +20,7 @@ export default function BuyerHomePage() {
       router.replace('/auth/buyer-login');
     }
 
-    fetch('/api/contracts')
+    fetch('/api/contracts?role=buyer')
       .then(res => res.json())
       .then((data: any[]) => {
         const total = data.reduce((acc, c) => acc + (Number(c.quantity) || 0), 0);

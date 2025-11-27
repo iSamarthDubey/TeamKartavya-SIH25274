@@ -18,16 +18,23 @@ export default function MyContractsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/contracts')
-      .then(res => res.json())
-      .then(data => {
-        setContracts(data);
+    if (typeof window !== 'undefined') {
+      const userId = window.localStorage.getItem("kh_user_id");
+      if (userId) {
+        fetch(`/api/contracts?role=farmer&userId=${userId}`)
+          .then(res => res.json())
+          .then(data => {
+            setContracts(data);
+            setLoading(false);
+          })
+          .catch(err => {
+            console.error(err);
+            setLoading(false);
+          });
+      } else {
         setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
+      }
+    }
   }, []);
 
   return (

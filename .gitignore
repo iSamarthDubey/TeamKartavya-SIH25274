@@ -1,9 +1,73 @@
+# ===================================================
+# MONOREPO IGNORE FILE (Safe for Next.js, Expo, Node)
+# ===================================================
+
+# Node dependencies
 node_modules/
-.expo/
-apps/mobile-native/
-apps/web/
+.pnp/
+.pnp.js
+.pnpm-store/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Build / dist outputs
 dist/
 build/
+out/
 .next/
+.expo/
 expo/
-*.log
+.expo-shared/
+
+# Generated files
+coverage/
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+.idea/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# Cache
+.cache/
+.next/cache/
+
+# Temporary files
+*.tmp
+*.swp
+
+# Legacy / unwanted folders (if auto-generated)
+apps/mobile-native/node_modules/
+apps/mobile-native/android/
+apps/mobile-native/ios/
+
+# ===================================================
+# IMPORTANT: WE DO NOT IGNORE THESE
+# (These must stay tracked in your monorepo)
+#
+# ✔ Supabase migrations
+# ✔ Supabase SQL files
+# ✔ Documentation
+# ✔ Deployment guides
+# ✔ README files
+# ✔ PWA/Next.js source code
+# ✔ Admin-web source code
+# ✔ API/services code
+# ✔ tsconfig, package.json, workspace files
+# ===================================================
