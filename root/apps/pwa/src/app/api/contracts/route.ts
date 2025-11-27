@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
       quantity: row.quantity,
       unit: row.unit,
       strikePrice: row.strike_price,
-      deliveryWindow: row.delivery_window,
+      deliveryWindow: row.deliverywindow,
       status: row.status,
       createdAt: row.created_at,
       farmerId: row.farmer_id,
@@ -63,14 +63,12 @@ export async function POST(req: NextRequest) {
     }
 
     const supabase = supabaseServer();
-    const id = Date.now().toString();
     const insertRow = {
-      id,
       crop,
       quantity: Number(quantity),
       unit,
       strike_price: Number(targetPrice),
-      delivery_window: deliveryWindow,
+      deliverywindow: deliveryWindow,
       status: "CREATED",
       farmer_id: userId || null,
     };
@@ -96,13 +94,24 @@ export async function POST(req: NextRequest) {
       quantity: data.quantity,
       unit: data.unit,
       strikePrice: data.strike_price,
-      deliveryWindow: data.delivery_window,
+      deliveryWindow: data.deliverywindow,
       status: data.status,
       createdAt: data.created_at,
       pdfUrl: data.pdf_url,
       anchorTxHash: data.anchor_tx_hash,
       anchorExplorerUrl: data.anchor_explorer_url,
     };
+
+    // Send in-app notification to farmer
+    if (userId) {
+      await supabase.from('notifications').insert({
+        user_id: userId,
+        title: 'Contract Created',
+        message: `Your ${crop} contract for ${quantity} ${unit} has been created successfully.`,
+        type: 'contract',
+        read: false,
+      });
+    }
 
     return NextResponse.json(contract, { status: 201 });
   } catch (e: any) {
