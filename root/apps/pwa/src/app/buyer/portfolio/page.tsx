@@ -9,7 +9,7 @@ export default function BuyerPortfolioPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/contracts')
+    fetch('/api/contracts?role=buyer')
       .then(res => res.json())
       .then((data: any[]) => {
         // Filter for matched contracts (simulating buyer's portfolio)
