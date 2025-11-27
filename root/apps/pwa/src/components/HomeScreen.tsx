@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NotificationBell } from "./NotificationBell";
+import NotificationPrompt from "./NotificationPrompt";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -79,6 +80,8 @@ export default function HomeScreen() {
 
   return (
     <div className="min-h-screen pb-20 relative bg-gray-50">
+      <NotificationPrompt />
+      
       <header className="bg-green-800 text-white p-5 rounded-b-3xl shadow-lg pb-10">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
