@@ -23,7 +23,7 @@ export async function GET(
     quantity: data.quantity,
     unit: data.unit,
     strikePrice: data.strike_price,
-    deliveryWindow: data.delivery_window,
+    deliveryWindow: data.deliverywindow,
     status: data.status,
     createdAt: data.created_at,
     pdfUrl: data.pdf_url,
