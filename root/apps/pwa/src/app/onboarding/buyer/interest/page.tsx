@@ -42,12 +42,31 @@ export default function BuyerInterestOnboardingPage() {
     setProfile((prev) => ({ ...prev, volumeBand: v }));
   }
 
-  function finish() {
+  async function finish() {
     if (typeof window !== 'undefined') {
       const raw = window.localStorage.getItem(PROFILE_STORAGE_KEY);
       const base = raw ? JSON.parse(raw) : {};
       const merged = { ...base, ...profile, onboardingCompleted: true };
       window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(merged));
+      
+      // Save to database
+      const userId = window.localStorage.getItem("kh_user_id");
+      if (userId) {
+        try {
+          await fetch('/api/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId,
+              name: base.name || 'Buyer',
+              location: base.location || 'Not specified',
+              crops: profile.buyerCrops || [],
+            }),
+          });
+        } catch (error) {
+          console.error('Failed to save buyer profile:', error);
+        }
+      }
     }
     router.replace('/buyer/home');
   }
