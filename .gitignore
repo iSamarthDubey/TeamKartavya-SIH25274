@@ -14,3 +14,14 @@ root/docs/DEPLOYMENT_GUIDE.md
 root/services/ml/README.md
 root/.md
 root/docs/OTP_SMS_INTEGRATION.md
+root/apps/pwa/src/app/contracts/new/page.tsx
+root/infra/supabase/migrate_contracts.sql
+root/infra/supabase/notifications.sql
+root/infra/supabase/push_subscriptions.sql
+root/infra/supabase/users.sql
+root/infra/supabase/fix_price_column.sql
+root/infra/supabase/contracts.sql
+.gitignore
+root/infra/supabase/SETUP_GUIDE.md
+root/infra/supabase/README.md
+root/docs/PUSH_NOTIFICATIONS.md
